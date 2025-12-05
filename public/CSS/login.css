@@ -1,0 +1,91 @@
+
+        body {
+            background: url('/img/bg-LOGIN.jpg') center/cover no-repeat;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            font-family: "Inria Sans", sans-serif;
+        }
+
+        .dark-overlay {
+            background: rgba(0,0,0,0.55);
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+        }
+
+        .content-wrapper {
+            position: relative;
+            z-index: 2;
+        }
+
+        .login-box {
+            background: rgba(255, 255, 255, 0.05); 
+            backdrop-filter: blur(14px);
+            border-radius: 18px;
+            padding: 40px;
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .form-control {
+            background: rgba(255,255,255,0.04); 
+            border-radius: 50px;
+            border: 1px solid #F8FFFB;
+            color: #fff;
+            padding-left: 18px;
+        }
+
+        .form-control::placeholder {
+            color: #e8e8e8;
+        }
+
+        .btn-login {
+            background: linear-gradient(90deg, #133923, #184A2D, #217246);
+            border: none;
+            border-radius: 50px;
+            box-shadow: 0 4px 12px rgba(33, 114, 70, 0.5);
+        }
+
+        .left-title {
+            color: white;
+            font-family: "Inria Sans", sans-serif;
+            font-size: 24px;
+        }
+
+        .wbi-title {
+            font-family: "Lilita One", sans-serif;
+            font-size: 60px;
+            letter-spacing: 1px;
+        }
+
+        .divider-half {
+            width: 120px;
+            height: 4px;
+            background: #ffffff;
+            margin-top: 5px;
+            border-radius: 10px;
+        }
+
+        .logo-container {
+            background: white;
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+        }
+.text-group h1,
+.text-group h2 {
+    margin-bottom: -8px; 
+}
+
+.footer-bottom {
+    position: absolute;
+    bottom: 20px;
+    left: 80px;
+    color: white;
+    font-size: 14px;
+    z-index: 3;
+}
