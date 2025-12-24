@@ -45,7 +45,7 @@
             <div class="login-box shadow">
                 <h2 class="wbi-title text-center mb-2">Sign In</h2>
                 <p class="text-center mb-4">Masuk Ke Portal Mahasiswa</p>
-
+                <form method="POST" action="/login">
                     @csrf
 
                     <div class="mb-3">
