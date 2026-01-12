@@ -10,7 +10,19 @@ class Nilai extends Model
     use HasFactory;
 
     protected $table = 'nilai';
-    protected $fillable = ['mahasiswa_id', 'kelas_id', 'dosen_id', 'nilai_angka', 'nilai_huruf', 'bobot', 'status_kunci'];
+    protected $fillable = [
+        'mahasiswa_id', 
+        'kelas_id', 
+        'dosen_id', 
+        'nilai_kehadiran', 
+        'nilai_tugas', 
+        'nilai_uts', 
+        'nilai_uas', 
+        'nilai_angka', 
+        'nilai_huruf', 
+        'bobot', 
+        'status_kunci'
+    ];
 
     public function mahasiswa()
     {

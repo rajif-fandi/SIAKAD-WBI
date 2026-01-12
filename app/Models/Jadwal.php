@@ -22,4 +22,11 @@ class Jadwal extends Model
     {
         return $this->hasMany(Pertemuan::class, 'jadwal_id');
     }
+
+    public function getEnrolledStudentsCount()
+    {
+        return $this->kelas->krsDetails()->whereHas('krs', function($q) {
+            $q->whereIn('status', ['disetujui_wali', 'verified']);
+        })->count();
+    }
 }

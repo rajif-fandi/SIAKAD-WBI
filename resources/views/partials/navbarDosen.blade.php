@@ -10,7 +10,7 @@
         </svg>
     </button>
 
-            <div data-accordion-button class="hidden">
+            <div data-accordion-content class="">
                 <a href="{{ route('dosen.dashboard') }}"
    class="block px-4 py-2.5 text-sm transition
    {{ request()->routeIs('dosen.dashboard')
@@ -65,9 +65,6 @@ document.querySelectorAll('[data-accordion-button]').forEach((button) => {
         document.querySelectorAll('[data-accordion-content]').forEach((el) => {
             if (el !== content) {
                 el.classList.add('hidden');
-                el.previousElementSibling
-                    .querySelector('svg')
-                    .classList.remove('rotate-180');
             }
         });
 

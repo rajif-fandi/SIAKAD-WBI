@@ -1,4 +1,4 @@
-@extends('layouts.mahasiswa')
+@extends('layouts.app')
 
 @section('title', 'Detail KRS')
 

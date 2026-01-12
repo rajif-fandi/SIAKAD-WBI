@@ -1,4 +1,4 @@
-@extends('layouts.mahasiswa')
+@extends('layouts.app')
 
 @section('title', 'Isi KRS')
 
@@ -25,6 +25,7 @@
 
     <form action="{{ route('KRS.store') }}" method="POST" id="krsForm">
         @csrf
+        <input type="hidden" name="action" id="formAction" value="submit">
         <div class="overflow-x-auto">
             <table class="w-full text-left font-inter">
                 <thead>
@@ -39,14 +40,30 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100 text-sm">
+                    @php
+                        $selectedKelasIds = $mahasiswa->activeKrs ? $mahasiswa->activeKrs->details->pluck('kelas_id')->toArray() : [];
+                        // Identify failed MK IDs for labeling
+                        $failedMkIds = \App\Models\Nilai::where('mahasiswa_id', $mahasiswa->mahasiswa_id)
+                            ->where('bobot', '<', 2.0)
+                            ->join('kelas', 'nilai.kelas_id', '=', 'kelas.kelas_id')
+                            ->pluck('kelas.matakuliah_id')
+                            ->toArray();
+                    @endphp
                     @forelse($availableClasses as $kelas)
                     <tr class="hover:bg-gray-50 transition-colors">
                         <td class="py-4 px-6">
-                            <input type="checkbox" name="kelas_ids[]" value="{{ $kelas->kelas_id }}" class="w-4 h-4 text-[#1b4d36] border-gray-300 rounded focus:ring-[#1b4d36]">
+                            <input type="checkbox" name="kelas_ids[]" value="{{ $kelas->kelas_id }}" 
+                                {{ in_array($kelas->kelas_id, $selectedKelasIds) ? 'checked' : '' }}
+                                class="w-4 h-4 text-[#1b4d36] border-gray-300 rounded focus:ring-[#1b4d36]">
                         </td>
                         <td class="py-4 px-6 font-bold text-[#1b4d36]">{{ $kelas->matakuliah->kode_mk }}</td>
                         <td class="py-4 px-6">
-                            <p class="font-bold text-gray-900">{{ $kelas->matakuliah->nama_mk }}</p>
+                            <div class="flex items-center gap-2">
+                                <p class="font-bold text-gray-900">{{ $kelas->matakuliah->nama_mk }}</p>
+                                @if(in_array($kelas->matakuliah_id, $failedMkIds))
+                                    <span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-orange-100 text-orange-700 border border-orange-200">Mengulang</span>
+                                @endif
+                            </div>
                             <p class="text-[10px] text-gray-400">Paket Semester: {{ $kelas->matakuliah->semester_paket }}</p>
                         </td>
                         <td class="py-4 px-6 font-bold text-gray-700 text-center">{{ $kelas->matakuliah->sks }}</td>
@@ -80,7 +97,8 @@
             </div>
             <div class="flex items-center gap-3">
                 <a href="{{ route('KRS.index') }}" class="px-6 py-2 rounded-lg font-bold text-gray-500 hover:bg-gray-200 transition text-sm">Batal</a>
-                <button type="submit" class="bg-[#1b4d36] hover:bg-[#153e2b] text-white px-8 py-2 rounded-lg font-bold shadow-sm transition text-sm">Ajukan KRS</button>
+                <button type="submit" onclick="document.getElementById('formAction').value='draft'" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-2 rounded-lg font-bold transition text-sm">Simpan Draft</button>
+                <button type="submit" onclick="document.getElementById('formAction').value='submit'" class="bg-[#1b4d36] hover:bg-[#153e2b] text-white px-8 py-2 rounded-lg font-bold shadow-sm transition text-sm">Ajukan KRS</button>
             </div>
         </div>
     </form>
@@ -91,7 +109,7 @@
         const checkboxes = document.querySelectorAll('input[name="kelas_ids[]"]');
         const totalSksEl = document.getElementById('totalSks');
         
-        function updateTotalSks() {
+        function updateTotalSks(e) {
             let total = 0;
             checkboxes.forEach(cb => {
                 if (cb.checked) {
@@ -100,12 +118,32 @@
                     total += sks;
                 }
             });
+
+            if (total > 25 && e && e.target.checked) {
+                Swal.fire({
+                    title: 'Batas SKS Terlampaui',
+                    text: 'Maksimal pengambilan adalah 25 SKS. Total saat ini: ' + total + ' SKS.',
+                    icon: 'warning',
+                    confirmButtonColor: '#1b4d36'
+                });
+                
+                // Uncheck the last action
+                e.target.checked = false;
+                
+                // Recalculate without the last one
+                updateTotalSks();
+                return;
+            }
+
             totalSksEl.textContent = total;
         }
 
         checkboxes.forEach(cb => {
-            cb.addEventListener('change', updateTotalSks);
+            cb.addEventListener('change', (e) => updateTotalSks(e));
         });
+
+        // Initialize total on load
+        updateTotalSks();
     });
 </script>
 @endsection

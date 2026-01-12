@@ -35,9 +35,10 @@ class JadwalController extends Controller
             ]);
         }
 
-        // Get student's KRS for active semester
+        // Get student's KRS for active semester - MUST be approved or final
         $krs = Krs::where('mahasiswa_id', $mahasiswa->mahasiswa_id)
             ->where('semester_ajaran_id', $activeSemester->semester_ajaran_id)
+            ->whereIn('status', ['disetujui_wali', 'final'])
             ->first();
 
         if (!$krs) {
@@ -45,19 +46,14 @@ class JadwalController extends Controller
                 'schedules' => collect([]),
                 'total_courses' => 0,
                 'joined_classes' => 0,
-                'not_joined' => 0
+                'not_joined' => 0,
+                'krs_not_approved' => true
             ]);
         }
 
-        // Get classes from KRS that match student's Prodi AND current Semester Paket
+        // Get ALL classes from approved KRS (removed semester_paket filter to allow retakes)
         $krsDetails = KrsDetail::with(['kelas.matakuliah', 'kelas.jadwals', 'kelas.dosenPengampu.dosen'])
             ->where('krs_id', $krs->krs_id)
-            ->whereHas('kelas', function($q) use ($mahasiswa) {
-                $q->where('prodi_id', $mahasiswa->prodi_id);
-            })
-            ->whereHas('kelas.matakuliah', function($q) use ($mahasiswa) {
-                $q->where('semester_paket', $mahasiswa->semester_sekarang);
-            })
             ->get();
 
         $schedules = [];
@@ -128,16 +124,11 @@ class JadwalController extends Controller
 
         $activeSemester = SemesterAjaran::where('is_active', true)->first();
         
-        // Find the KRS Detail, ensuring it belongs to the student's prodi AND current semester paket
+        // Find the KRS Detail, ensuring it belongs to the student's approved KRS
         $krsDetail = KrsDetail::whereHas('krs', function($q) use ($mahasiswa, $activeSemester) {
             $q->where('mahasiswa_id', $mahasiswa->mahasiswa_id)
-              ->where('semester_ajaran_id', $activeSemester->semester_ajaran_id);
-        })
-        ->whereHas('kelas', function($q) use ($mahasiswa) {
-            $q->where('prodi_id', $mahasiswa->prodi_id);
-        })
-        ->whereHas('kelas.matakuliah', function($q) use ($mahasiswa) {
-            $q->where('semester_paket', $mahasiswa->semester_sekarang);
+              ->where('semester_ajaran_id', $activeSemester->semester_ajaran_id)
+              ->whereIn('status', ['disetujui_wali', 'final']);
         })
         ->where('kelas_id', $kelas_id)->first();
 

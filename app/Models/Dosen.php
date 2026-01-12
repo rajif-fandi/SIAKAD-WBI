@@ -23,4 +23,9 @@ class Dosen extends Model
     {
         return $this->hasMany(Mahasiswa::class, 'dosen_wali_id');
     }
+
+    public function prodi()
+    {
+        return $this->belongsTo(Prodi::class, 'prodi_id');
+    }
 }

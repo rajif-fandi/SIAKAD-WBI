@@ -5,238 +5,156 @@
 
 <div class="">
     {{-- Header Section --}}
-    <div class="bg-gradient-to-r from-indigo-600 to-indigo-500 text-white p-6 rounded-2xl mb-6 shadow-lg">
-        <div class="flex items-center justify-between">
+    <div class="bg-gradient-to-r from-indigo-600 to-indigo-500 text-white p-10 rounded-[2rem] mb-8 shadow-2xl relative overflow-hidden">
+        <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
-                <h2 class="text-2xl font-bold mb-1">Penilaian Mahasiswa</h2>
-                <p class="text-indigo-100 text-sm">Input dan kelola nilai mata kuliah</p>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-[10px] font-black uppercase tracking-[0.2em] mb-4">
+                    Portal Penilaian Akademik
+                </div>
+                <h2 class="text-4xl font-black mb-1 tracking-tight">Penilaian Mahasiswa</h2>
+                <p class="text-indigo-100/80 text-sm font-medium">Semester {{ $activeSemester->nama_semester ?? 'Aktif' }}</p>
             </div>
             <div class="text-right">
-                <div class="bg-white bg-opacity-20 backdrop-blur-sm rounded-xl px-6 py-3">
-                    <p class="text-sm opacity-90">Deadline Input Nilai</p>
-                    <p class="text-xl font-bold">15 Januari 2025</p>
+                <div class="bg-white/10 backdrop-blur-md rounded-2xl px-8 py-5 border border-white/10 shadow-lg">
+                    <p class="text-[10px] font-black uppercase tracking-[0.2em] opacity-70 mb-1">Batas Input Nilai</p>
+                    <p class="text-2xl font-black uppercase tracking-tight">{{ $activeSemester->tanggal_akhir ? \Carbon\Carbon::parse($activeSemester->tanggal_akhir)->translatedFormat('d F Y') : '15 Januari 2025' }}</p>
                 </div>
             </div>
         </div>
-    </div>
-
-    {{-- Alert Warning --}}
-    <div class="bg-orange-50 border-l-4 border-orange-500 p-4 rounded-lg mb-6">
-        <div class="flex items-start gap-3">
-            <svg class="w-6 h-6 text-orange-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-            </svg>
-            <div>
-                <h3 class="font-semibold text-orange-800 mb-1">Perhatian!</h3>
-                <p class="text-sm text-orange-700">Anda memiliki <strong>8 kelas</strong> yang belum menginput nilai. Mohon segera lengkapi sebelum deadline <strong>15 Januari 2025</strong>.</p>
-            </div>
-        </div>
+        {{-- Decorative elements --}}
+        <div class="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-0 left-0 -ml-16 -mb-16 w-64 h-64 bg-indigo-400/10 rounded-full blur-3xl"></div>
     </div>
 
     {{-- Stats Cards --}}
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div class="bg-gradient-to-br from-green-500 to-green-600 text-white p-5 rounded-2xl shadow-lg relative overflow-hidden">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        @php
+            $totalClasses = $classes->count();
+            $completedClasses = $classes->where('grading_progress', 100)->count();
+            $pendingClasses = $totalClasses - $completedClasses;
+            $totalStudents = $classes->sum('total_students');
+        @endphp
+        <div class="bg-white p-8 rounded-[2rem] shadow-xl border border-gray-100 relative overflow-hidden group">
             <div class="relative z-10">
-                <div class="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center mb-3">
-                    <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                <div class="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600 mb-6 group-hover:scale-110 transition-transform shadow-inner">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </div>
-                <p class="text-sm opacity-90 mb-1">Nilai Selesai</p>
-                <p class="text-4xl font-bold">5</p>
-                <p class="text-xs opacity-75 mt-1">Kelas sudah dinilai</p>
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Nilai Selesai</p>
+                <h4 class="text-4xl font-black text-gray-900 leading-none">{{ $completedClasses }}</h4>
+                <p class="text-[10px] font-bold text-gray-400 mt-2 uppercase tracking-tighter">Kelas Terkunci</p>
             </div>
-            <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-white opacity-10 rounded-full"></div>
         </div>
 
-        <div class="bg-gradient-to-br from-red-500 to-red-600 text-white p-5 rounded-2xl shadow-lg relative overflow-hidden">
+        <div class="bg-white p-8 rounded-[2rem] shadow-xl border border-gray-100 relative overflow-hidden group">
             <div class="relative z-10">
-                <div class="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center mb-3">
-                    <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                <div class="w-14 h-14 bg-rose-50 rounded-2xl flex items-center justify-center text-rose-600 mb-6 group-hover:scale-110 transition-transform shadow-inner">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                     </svg>
                 </div>
-                <p class="text-sm opacity-90 mb-1">Belum Input</p>
-                <p class="text-4xl font-bold">8</p>
-                <p class="text-xs opacity-75 mt-1">Kelas menunggu</p>
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Belum Selesai</p>
+                <h4 class="text-4xl font-black text-gray-900 leading-none">{{ $pendingClasses }}</h4>
+                <p class="text-[10px] font-bold text-gray-400 mt-2 uppercase tracking-tighter">Kelas Tersisa</p>
             </div>
-            <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-white opacity-10 rounded-full"></div>
         </div>
 
-        <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-5 rounded-2xl shadow-lg relative overflow-hidden">
+        <div class="bg-white p-8 rounded-[2rem] shadow-xl border border-gray-100 relative overflow-hidden group">
             <div class="relative z-10">
-                <div class="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center mb-3">
-                    <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"></path>
+                <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 mb-6 group-hover:scale-110 transition-transform shadow-inner">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                     </svg>
                 </div>
-                <p class="text-sm opacity-90 mb-1">Total Mahasiswa</p>
-                <p class="text-4xl font-bold">142</p>
-                <p class="text-xs opacity-75 mt-1">Mahasiswa aktif</p>
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total Mahasiswa</p>
+                <h4 class="text-4xl font-black text-gray-900 leading-none">{{ $totalStudents }}</h4>
+                <p class="text-[10px] font-bold text-gray-400 mt-2 uppercase tracking-tighter">Semua Kelas</p>
             </div>
-            <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-white opacity-10 rounded-full"></div>
         </div>
 
-        <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-5 rounded-2xl shadow-lg relative overflow-hidden">
+        <div class="bg-white p-8 rounded-[2rem] shadow-xl border border-gray-100 relative overflow-hidden group">
             <div class="relative z-10">
-                <div class="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center mb-3">
-                    <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"></path>
+                <div class="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 mb-6 group-hover:scale-110 transition-transform shadow-inner">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                     </svg>
                 </div>
-                <p class="text-sm opacity-90 mb-1">Rata-rata Nilai</p>
-                <p class="text-4xl font-bold">B+</p>
-                <p class="text-xs opacity-75 mt-1">Semester ini</p>
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Rata-rata Nilai</p>
+                @php
+                    $overallAvg = $classes->avg('avg_grade_numeric') ?? 0;
+                    $letter = 'N/A';
+                    if ($overallAvg >= 85) $letter = 'A';
+                    elseif ($overallAvg >= 75) $letter = 'B+';
+                    elseif ($overallAvg >= 65) $letter = 'B';
+                    elseif ($overallAvg >= 55) $letter = 'C';
+                @endphp
+                <h4 class="text-4xl font-black text-gray-900 leading-none">{{ $letter }}</h4>
+                <p class="text-[10px] font-bold text-gray-400 mt-2 uppercase tracking-tighter">Berdasarkan Capaian</p>
             </div>
-            <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-white opacity-10 rounded-full"></div>
-        </div>
-    </div>
-
-    {{-- Filter Section --}}
-    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 mb-6">
-        <div class="flex items-center gap-4">
-            <div class="flex-1">
-                <div class="relative">
-                    <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                    <input type="text" placeholder="Cari mata kuliah atau kelas..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-                </div>
-            </div>
-            <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-                <option>Semua Status</option>
-                <option>Sudah Dinilai</option>
-                <option>Belum Dinilai</option>
-            </select>
-            <button class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition flex items-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                </svg>
-                Export Nilai
-            </button>
         </div>
     </div>
 
     {{-- Class List Cards --}}
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        @php
-            $classes = [
-                [
-                    'course' => 'Pemrograman Web Lanjut',
-                    'code' => 'PWL301',
-                    'class' => 'RPL 3A',
-                    'students' => 32,
-                    'graded' => 32,
-                    'status' => 'complete',
-                    'color' => 'green',
-                    'avg_grade' => 'A'
-                ],
-                [
-                    'course' => 'Basis Data',
-                    'code' => 'BD201',
-                    'class' => 'RPL 2B',
-                    'students' => 35,
-                    'graded' => 35,
-                    'status' => 'complete',
-                    'color' => 'green',
-                    'avg_grade' => 'B+'
-                ],
-                [
-                    'course' => 'Mobile Programming',
-                    'code' => 'MPR401',
-                    'class' => 'RPL 4A',
-                    'students' => 28,
-                    'graded' => 0,
-                    'status' => 'pending',
-                    'color' => 'red',
-                    'avg_grade' => '-'
-                ],
-                [
-                    'course' => 'Agile Development',
-                    'code' => 'AD401',
-                    'class' => 'RPL 4B',
-                    'students' => 30,
-                    'graded' => 0,
-                    'status' => 'pending',
-                    'color' => 'red',
-                    'avg_grade' => '-'
-                ],
-            ];
-        @endphp
-
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
         @foreach($classes as $class)
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition">
-            <div class="border-l-4 border-{{ $class['color'] }}-500">
-                <div class="p-6">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="flex-1">
-                            <div class="flex items-center gap-2 mb-2">
-                                <h3 class="text-lg font-bold text-gray-900">{{ $class['course'] }}</h3>
-                                @if($class['status'] == 'complete')
-                                    <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">Selesai</span>
-                                @else
-                                    <span class="px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs font-semibold">Pending</span>
-                                @endif
-                            </div>
-                            <div class="flex items-center gap-4 text-sm text-gray-600">
-                                <span class="font-mono font-semibold">{{ $class['code'] }}</span>
-                                <span>•</span>
-                                <span class="font-medium">{{ $class['class'] }}</span>
-                            </div>
+        <div class="bg-white rounded-[2.5rem] shadow-xl border border-gray-100 overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group">
+            <div class="p-8">
+                <div class="flex items-start justify-between mb-8">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-[10px] font-black uppercase tracking-widest border border-indigo-100">
+                                {{ $class->matakuliah->kode_mk }}
+                            </span>
+                            @if($class->grading_progress == 100)
+                                <span class="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-[10px] font-black uppercase tracking-widest border border-emerald-100">Lengkap</span>
+                            @endif
                         </div>
-                        <div class="text-right">
-                            <div class="w-16 h-16 bg-{{ $class['color'] }}-100 rounded-xl flex items-center justify-center">
-                                <span class="text-2xl font-bold text-{{ $class['color'] }}-600">{{ $class['avg_grade'] }}</span>
-                            </div>
-                            <p class="text-xs text-gray-500 mt-1">Rata-rata</p>
+                        <h3 class="text-2xl font-black text-gray-900 leading-tight group-hover:text-indigo-600 transition-colors uppercase tracking-tight">{{ $class->matakuliah->nama_mk }}</h3>
+                        <p class="text-sm text-gray-400 font-bold mt-1 uppercase tracking-widest">Kelas {{ $class->kode_kelas }}</p>
+                    </div>
+                    <div class="text-right">
+                        <div class="w-20 h-20 bg-gray-50 rounded-3xl flex flex-col items-center justify-center border border-gray-100 shadow-inner">
+                            <span class="text-3xl font-black text-gray-900">{{ $class->avg_grade_letter }}</span>
+                            <span class="text-[8px] font-black text-gray-400 uppercase tracking-widest mt-0.5">RERATA</span>
                         </div>
                     </div>
+                </div>
 
-                    <div class="grid grid-cols-2 gap-4 mb-4">
-                        <div class="bg-gray-50 p-3 rounded-lg">
-                            <p class="text-xs text-gray-500 mb-1">Total Mahasiswa</p>
-                            <p class="text-2xl font-bold text-gray-900">{{ $class['students'] }}</p>
-                        </div>
-                        <div class="bg-gray-50 p-3 rounded-lg">
-                            <p class="text-xs text-gray-500 mb-1">Sudah Dinilai</p>
-                            <p class="text-2xl font-bold text-{{ $class['color'] }}-600">{{ $class['graded'] }}</p>
+                <div class="grid grid-cols-2 gap-6 mb-8">
+                    <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100 shadow-inner">
+                        <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-2">Total Mahasiswa</p>
+                        <div class="flex items-baseline gap-2">
+                            <h4 class="text-3xl font-black text-gray-900">{{ $class->total_students }}</h4>
+                            <span class="text-[10px] font-bold text-gray-400 uppercase">MHS</span>
                         </div>
                     </div>
+                    <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100 shadow-inner">
+                        <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-2">Terinput</p>
+                        <div class="flex items-baseline gap-2">
+                            <h4 class="text-3xl font-black text-emerald-600">{{ $class->graded_count }}</h4>
+                            <span class="text-[10px] font-bold text-gray-400 uppercase">/ {{ $class->total_students }}</span>
+                        </div>
+                    </div>
+                </div>
 
-                    <div class="mb-4">
-                        <div class="flex items-center justify-between text-sm mb-2">
-                            <span class="text-gray-600">Progress</span>
-                            <span class="font-semibold text-gray-900">{{ $class['graded'] }}/{{ $class['students'] }}</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div class="bg-{{ $class['color'] }}-500 h-2 rounded-full" style="width: {{ ($class['graded'] / $class['students']) * 100 }}%"></div>
-                        </div>
+                <div class="mb-8">
+                    <div class="flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">
+                        <span>Progres Pengisian</span>
+                        <span class="text-gray-900 font-black">{{ round($class->grading_progress) }}%</span>
                     </div>
+                    <div class="w-full bg-gray-100 rounded-full h-2 overflow-hidden shadow-inner">
+                        <div class="bg-gradient-to-r from-indigo-500 to-emerald-500 h-full rounded-full transition-all duration-1000" style="width: {{ $class->grading_progress }}%"></div>
+                    </div>
+                </div>
 
-                    <div class="flex gap-2">
-                        @if($class['status'] == 'pending')
-                            <button class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg transition flex items-center justify-center gap-2">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                </svg>
-                                Input Nilai
-                            </button>
-                        @else
-                            <button class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2.5 rounded-lg transition flex items-center justify-center gap-2">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                </svg>
-                                Lihat Detail
-                            </button>
-                            <button class="flex-1 bg-orange-100 hover:bg-orange-200 text-orange-700 font-semibold py-2.5 rounded-lg transition flex items-center justify-center gap-2">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                </svg>
-                                Edit
-                            </button>
-                        @endif
-                    </div>
+                <div class="flex gap-3">
+                    <a href="{{ route('dosen.penilaian.kelas', $class->kelas_id) }}" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 rounded-2xl transition-all shadow-lg shadow-indigo-200 flex items-center justify-center gap-2 uppercase text-xs tracking-widest">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                        </svg>
+                        Input Nilai
+                    </a>
                 </div>
             </div>
         </div>
@@ -269,39 +187,34 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
-                    @php
-                        $recentGrades = [
-                            ['2301010001', 'Ahmad Fadli', 'Pemrograman Web Lanjut', 88, 'A', '2 jam lalu'],
-                            ['2301010002', 'Budi Santoso', 'Pemrograman Web Lanjut', 85, 'A-', '2 jam lalu'],
-                            ['2301010003', 'Citra Dewi', 'Basis Data', 78, 'B+', '3 jam lalu'],
-                            ['2301010004', 'Dian Purnama', 'Basis Data', 92, 'A', '3 jam lalu'],
-                            ['2301010005', 'Eka Saputra', 'Pemrograman Web Lanjut', 76, 'B', '5 jam lalu'],
-                        ];
-                    @endphp
-
-                    @foreach($recentGrades as $grade)
+                    @foreach($recentGrades as $nilai)
                     <tr class="hover:bg-gray-50 transition">
-                        <td class="px-6 py-4 text-sm font-mono font-medium text-gray-900">{{ $grade[0] }}</td>
-                        <td class="px-6 py-4 text-sm text-gray-700">{{ $grade[1] }}</td>
-                        <td class="px-6 py-4 text-sm text-gray-600">{{ $grade[2] }}</td>
+                        <td class="px-6 py-4 text-sm font-mono font-medium text-gray-900">{{ $nilai->mahasiswa->npm }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-700">{{ $nilai->mahasiswa->nama }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-600">{{ $nilai->kelas->matakuliah->nama_mk }}</td>
                         <td class="px-6 py-4 text-center">
-                            <span class="text-sm font-bold text-gray-900">{{ $grade[3] }}</span>
+                            <span class="text-sm font-bold text-gray-900">{{ number_format($nilai->nilai_angka, 2) }}</span>
                         </td>
                         <td class="px-6 py-4 text-center">
                             @php
                                 $gradeColor = 'green';
-                                if($grade[4] == 'A' || $grade[4] == 'A-') $gradeColor = 'green';
-                                elseif($grade[4] == 'B+' || $grade[4] == 'B') $gradeColor = 'blue';
-                                elseif($grade[4] == 'B-' || $grade[4] == 'C+') $gradeColor = 'yellow';
-                                else $gradeColor = 'red';
+                                if($nilai->nilai_huruf == 'A' || $nilai->nilai_huruf == 'A-') $gradeColor = 'emerald';
+                                elseif(str_contains($nilai->nilai_huruf, 'B')) $gradeColor = 'blue';
+                                elseif(str_contains($nilai->nilai_huruf, 'C')) $gradeColor = 'yellow';
+                                else $gradeColor = 'rose';
                             @endphp
-                            <span class="inline-block px-3 py-1 bg-{{ $gradeColor }}-100 text-{{ $gradeColor }}-700 rounded-full text-sm font-bold">
-                                {{ $grade[4] }}
+                            <span class="inline-block px-3 py-1 bg-{{ $gradeColor }}-50 text-{{ $gradeColor }}-700 rounded-full text-xs font-black border border-{{ $gradeColor }}-100">
+                                {{ $nilai->nilai_huruf }}
                             </span>
                         </td>
-                        <td class="px-6 py-4 text-center text-sm text-gray-500">{{ $grade[5] }}</td>
+                        <td class="px-6 py-4 text-center text-[10px] font-bold text-gray-400 uppercase">{{ $nilai->updated_at->diffForHumans() }}</td>
                     </tr>
                     @endforeach
+                    @if($recentGrades->isEmpty())
+                    <tr>
+                        <td colspan="6" class="px-6 py-10 text-center text-gray-400 italic font-medium">Belum ada nilai yang diinput baru-baru ini.</td>
+                    </tr>
+                    @endif
                 </tbody>
             </table>
         </div>

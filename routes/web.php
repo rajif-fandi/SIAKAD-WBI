@@ -61,32 +61,21 @@ Route::middleware(['auth', 'role:mahasiswa'])->group(function () {
 
 // Dosen Routes
 Route::middleware(['auth', 'role:dosen'])->group(function () {
-    Route::get('/dosen/dashboard', function () {
-        return view('dosen.dashboard');
-    })->name('dosen.dashboard');
-
-    //profil
-    Route::get('/dosen/profil', function () {
-        return view('dosen.profil');
-    })->name('dosen.profil');
-
-    //jadwal
-    Route::get('/dosen/jadwal', function () {
-        return view('dosen.jadwal');
-    })->name('dosen.jadwal');
-
-    //KRS Mahasiswa
-    Route::get('/dosen/KRSMahasiswa', function () {
-        return view('dosen.KRSMahasiswa');
-    })->name('dosen.KRSMahasiswa');
-
-    //Penilaian Mata Kuliah
-    Route::get('/dosen/penilaian', function () {
-        return view('dosen.penilaian');
-    })->name('dosen.penilaian');
-
-    //Profil Dosen
-    Route::get('/dosen/profilDosen', function () {
-        return view('dosen.profilDosen');
-    })->name('dosen.profilDosen');
+    Route::get('/dosen/dashboard', [App\Http\Controllers\Dosen\DashboardController::class, 'index'])->name('dosen.dashboard');
+    Route::get('/dosen/jadwal', [App\Http\Controllers\Dosen\JadwalController::class, 'index'])->name('dosen.jadwal');
+    Route::get('/dosen/jadwal/{id}/peserta', [App\Http\Controllers\Dosen\JadwalController::class, 'peserta'])->name('dosen.jadwal.peserta');
+    Route::get('/dosen/jadwal/export-pdf', [App\Http\Controllers\Dosen\JadwalController::class, 'exportPdf'])->name('dosen.jadwal.pdf');
+    Route::get('/dosen/pertemuan', [App\Http\Controllers\Dosen\PertemuanController::class, 'index'])->name('dosen.pertemuan.index');
+    Route::get('/dosen/pertemuan/{pertemuan_id}/export-pdf', [App\Http\Controllers\Dosen\PertemuanController::class, 'exportPdf'])->name('dosen.pertemuan.export-pdf');
+    Route::post('/dosen/pertemuan/{jadwal_id}/mulai', [App\Http\Controllers\Dosen\PertemuanController::class, 'mulaiKelas'])->name('dosen.pertemuan.mulai');
+    Route::get('/dosen/pertemuan/{pertemuan_id}/presensi', [App\Http\Controllers\Dosen\PertemuanController::class, 'presensi'])->name('dosen.pertemuan.presensi');
+    Route::post('/dosen/pertemuan/presensi/simpan', [App\Http\Controllers\Dosen\PertemuanController::class, 'simpanPresensi'])->name('dosen.pertemuan.presensi.simpan');
+    Route::get('/dosen/KRSMahasiswa', [App\Http\Controllers\Dosen\KrsMahasiswaController::class, 'index'])->name('dosen.KRSMahasiswa');
+    Route::post('/dosen/KRSMahasiswa/{id}/approve', [App\Http\Controllers\Dosen\KrsMahasiswaController::class, 'approve'])->name('dosen.KRSMahasiswa.approve');
+    Route::post('/dosen/KRSMahasiswa/{id}/reject', [App\Http\Controllers\Dosen\KrsMahasiswaController::class, 'reject'])->name('dosen.KRSMahasiswa.reject');
+    Route::get('/dosen/penilaian', [App\Http\Controllers\Dosen\PenilaianController::class, 'index'])->name('dosen.penilaian');
+    Route::get('/dosen/penilaian/kelas/{id}', [App\Http\Controllers\Dosen\PenilaianController::class, 'kelas'])->name('dosen.penilaian.kelas');
+    Route::post('/dosen/penilaian/kelas/{id}/weights', [App\Http\Controllers\Dosen\PenilaianController::class, 'updateWeights'])->name('dosen.penilaian.weights.update');
+    Route::post('/dosen/penilaian/simpan', [App\Http\Controllers\Dosen\PenilaianController::class, 'store'])->name('dosen.penilaian.store');
+    Route::get('/dosen/profilDosen', function () { return view('dosen.profilDosen'); })->name('dosen.profilDosen');
 });

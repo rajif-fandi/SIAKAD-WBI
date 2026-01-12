@@ -2,18 +2,55 @@
 
 @section('content')
 
-{{-- Top Action Button --}}
-<div class="mb-6">
-    @if(!$hasActiveKrs)
-        <a href="{{ route('KRS.create') }}" class="flex items-center gap-2 bg-[#1b4d36] hover:bg-[#153e2b] text-white px-6 py-2.5 rounded-lg font-bold shadow-sm transition w-fit">
-            <span>Isi KRS</span>
+{{-- Top Action Button & Rejection Alert --}}
+<div class="mb-6 space-y-4">
+    @if(!$hasActiveKrs || $activeKrsStatus === 'ditolak' || $activeKrsStatus === 'draft')
+        <a href="{{ route('KRS.create') }}" class="flex items-center gap-2 {{ $activeKrsStatus === 'ditolak' ? 'bg-orange-600 hover:bg-orange-700' : ($activeKrsStatus === 'draft' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-[#1b4d36] hover:bg-[#153e2b]') }} text-white px-6 py-2.5 rounded-lg font-bold shadow-sm transition w-fit">
+            <span>
+                @if($activeKrsStatus === 'ditolak')
+                    Revisi & Isi Kembali KRS
+                @elseif($activeKrsStatus === 'draft')
+                    Lanjutkan Pengisian (Draft)
+                @else
+                    Isi KRS
+                @endif
+            </span>
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
             </svg>
         </a>
+
+        @if($activeKrsStatus === 'ditolak')
+            <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg shadow-sm">
+                <div class="flex items-center gap-3">
+                    <div class="bg-red-500 p-1.5 rounded-full text-white">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-red-800 uppercase tracking-tight">KRS Anda Ditolak</h3>
+                        <p class="text-xs text-red-700 mt-0.5">Silakan baca catatan dosen di bawah dan klik tombol di atas untuk mengajukan ulang KRS yang sudah diperbaiki.</p>
+                    </div>
+                </div>
+            </div>
+        @elseif($activeKrsStatus === 'draft')
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg shadow-sm">
+                <div class="flex items-center gap-3">
+                    <div class="bg-blue-500 p-1.5 rounded-full text-white">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-blue-800 uppercase tracking-tight">KRS Masih Draft</h3>
+                        <p class="text-xs text-blue-700 mt-0.5">KRS Anda belum diajukan ke Dosen Wali. Klik tombol di atas untuk melanjutkan dan mengirimkan KRS.</p>
+                    </div>
+                </div>
+            </div>
+        @endif
     @else
         <div class="bg-green-100 text-green-700 px-6 py-2.5 rounded-lg font-bold border border-green-200 w-fit">
-            KRS Semester Ini Sudah Terdaftar
+            <div class="flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                KRS Semester Ini Sudah Terdaftar ({{ $activeKrsStatus === 'disetujui_wali' ? 'Disetujui' : 'Dalam Proses' }})
+            </div>
         </div>
     @endif
 </div>
@@ -40,8 +77,26 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
-                    <span class="px-4 py-1 rounded-full border border-[#a5d6a7] bg-[#c8e6d5]/50 text-[#2e7d32] text-xs font-bold uppercase">
-                        {{ $krs->status }}
+                    @php
+                        $statusClasses = [
+                            'draft' => 'bg-gray-100 text-gray-600 border-gray-200',
+                            'diajukan' => 'bg-blue-50 text-blue-700 border-blue-200',
+                            'disetujui_wali' => 'bg-green-50 text-green-700 border-green-200',
+                            'ditolak' => 'bg-red-50 text-red-700 border-red-200',
+                            'final' => 'bg-purple-50 text-purple-700 border-purple-200'
+                        ];
+                        $statusLabels = [
+                            'draft' => 'Draft',
+                            'diajukan' => 'Pend. Review',
+                            'disetujui_wali' => 'Disetujui',
+                            'ditolak' => 'Ditolak',
+                            'final' => 'Final'
+                        ];
+                        $currentClass = $statusClasses[$krs->status] ?? $statusClasses['draft'];
+                        $currentLabel = $statusLabels[$krs->status] ?? $krs->status;
+                    @endphp
+                    <span class="px-4 py-1 rounded-full border {{ $currentClass }} text-[10px] font-bold uppercase tracking-wider">
+                        {{ $currentLabel }}
                     </span>
                     <button onclick="showKrsDetails({{ $krs->krs_id }})" class="flex items-center gap-1.5 bg-[#1b4d36] hover:bg-[#153e2b] text-white px-4 py-1.5 rounded-md text-xs font-bold transition shadow-sm">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
@@ -166,6 +221,19 @@
             totalSks.textContent = data.total_sks;
 
             let html = '';
+            
+            // Add catatan if exists
+            if (data.catatan) {
+                html += `
+                    <tr>
+                        <td colspan="5" class="py-4 px-6 bg-orange-50 border-b border-orange-100">
+                            <p class="text-[10px] uppercase font-bold text-orange-800 tracking-wider">Catatan Dosen Wali:</p>
+                            <p class="text-xs text-orange-900 mt-1 leading-relaxed italic">"${data.catatan}"</p>
+                        </td>
+                    </tr>
+                `;
+            }
+
             data.details.forEach(detail => {
                 const dosenList = detail.kelas.dosen_pengampu.map(dp => `<div>${dp.dosen.nama}</div>`).join('');
                 html += `

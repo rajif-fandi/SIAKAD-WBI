@@ -30,49 +30,71 @@ class KrsController extends Controller
 
         $activeSemester = SemesterAjaran::where('is_active', true)->first();
         $hasActiveKrs = false;
+        $activeKrsStatus = null;
         if ($activeSemester) {
-            $hasActiveKrs = Krs::where('mahasiswa_id', $mahasiswa->mahasiswa_id)
+            $activeKrs = Krs::where('mahasiswa_id', $mahasiswa->mahasiswa_id)
                 ->where('semester_ajaran_id', $activeSemester->semester_ajaran_id)
-                ->exists();
+                ->first();
+            
+            if ($activeKrs) {
+                $hasActiveKrs = true;
+                $activeKrsStatus = $activeKrs->status;
+            }
         }
 
-        return view('KRS.index', compact('mahasiswa', 'krsList', 'activeSemester', 'hasActiveKrs'));
+        return view('KRS.index', compact('mahasiswa', 'krsList', 'activeSemester', 'hasActiveKrs', 'activeKrsStatus'));
     }
 
     public function create()
     {
         $user = Auth::user();
-        $mahasiswa = Mahasiswa::where('user_id', $user->id)->first();
+        $mahasiswa = Mahasiswa::with(['prodi', 'activeKrs.details.kelas.matakuliah'])->where('user_id', $user->id)->first();
 
         if (!$mahasiswa) {
             return redirect('/dashboard')->with('error', 'Data mahasiswa tidak ditemukan.');
         }
 
+        \Illuminate\Support\Facades\Log::info("KRS.create Access - User ID: " . $user->id);
+        
         $activeSemester = SemesterAjaran::where('is_active', true)->first();
         if (!$activeSemester) {
+            \Illuminate\Support\Facades\Log::warning("KRS.create Redirect - No Active Semester");
             return redirect()->route('KRS.index')->with('error', 'Semester aktif tidak ditemukan.');
         }
 
-        // Check if student already has KRS for this active semester
         $existingKrs = Krs::where('mahasiswa_id', $mahasiswa->mahasiswa_id)
             ->where('semester_ajaran_id', $activeSemester->semester_ajaran_id)
             ->first();
 
-        if ($existingKrs) {
+        \Illuminate\Support\Facades\Log::info("KRS.create - Existing status: " . ($existingKrs->status ?? 'none'));
+
+        // If exists and NOT (rejected or draft), block access.
+        if ($existingKrs && !in_array($existingKrs->status, ['ditolak', 'draft'])) {
+             \Illuminate\Support\Facades\Log::warning("KRS.create Redirect - Status blocked: " . $existingKrs->status);
              return redirect()->route('KRS.index')->with('info', 'Anda sudah memiliki KRS untuk semester ini.');
         }
 
-        // Fetch available classes based on Prodi, Active Semester, AND student's Semester Sekarang
+        // Fetch available classes based on Prodi, Active Semester, AND (Current Semester OR Failed Retakes)
         $availableClasses = Kelas::with(['matakuliah', 'dosenPengampu.dosen', 'jadwals'])
             ->where('prodi_id', $mahasiswa->prodi_id)
             ->where('semester_ajaran_id', $activeSemester->semester_ajaran_id)
             ->whereHas('matakuliah', function($q) use ($mahasiswa, $activeSemester) {
-                // 1. Must match student's current semester paket
-                $q->where('semester_paket', $mahasiswa->semester_sekarang);
-                
-                // 2. Must match the active semester type (Ganjil/Genap)
+                // Check if MK matches current semester type (Ganjil/Genap)
                 $q->whereHas('kurikulum', function($sq) use ($activeSemester) {
                     $sq->where('kurikulum_matkul.tipe_semester', $activeSemester->semester);
+                });
+
+                $q->where(function($sub) use ($mahasiswa) {
+                    // 1. Must match student's current semester paket
+                    $sub->where('semester_paket', $mahasiswa->semester_sekarang)
+                        // OR 2. Failed courses from previous semesters (Retake)
+                        ->orWhereIn('matakuliah_id', function($failedQuery) use ($mahasiswa) {
+                            $failedQuery->select('k.matakuliah_id')
+                                ->from('nilai as n')
+                                ->join('kelas as k', 'n.kelas_id', '=', 'k.kelas_id')
+                                ->where('n.mahasiswa_id', $mahasiswa->mahasiswa_id)
+                                ->where('n.bobot', '<', 2.0);
+                        });
                 });
             })
             ->get();
@@ -95,21 +117,42 @@ class KrsController extends Controller
             return back()->with('error', 'Semester aktif tidak ditemukan.');
         }
 
-        // Check again to be safe
-        $existingKrs = Krs::where('mahasiswa_id', $mahasiswa->mahasiswa_id)
-            ->where('semester_ajaran_id', $activeSemester->semester_ajaran_id)
-            ->first();
+        if ($activeSemester) {
+            $existingKrs = Krs::where('mahasiswa_id', $mahasiswa->mahasiswa_id)
+                ->where('semester_ajaran_id', $activeSemester->semester_ajaran_id)
+                ->first();
+
+            if ($existingKrs && !in_array($existingKrs->status, ['ditolak', 'draft'])) {
+                return redirect()->route('KRS.index')->with('error', 'Anda sudah memiliki KRS untuk semester ini.');
+            }
+        }
+
+        // Validate 25 SKS Limit
+        $totalSksPengajuan = 0;
+        foreach ($request->kelas_ids as $kelasId) {
+            $kelas = Kelas::with('matakuliah')->find($kelasId);
+            if ($kelas) {
+                $totalSksPengajuan += $kelas->matakuliah->sks;
+            }
+        }
+
+        if ($totalSksPengajuan > 25) {
+            return back()->with('error', 'Total SKS yang dipilih ('.$totalSksPengajuan.' SKS) melebihi batas maksimal 25 SKS per semester.');
+        }
 
         if ($existingKrs) {
-             return redirect()->route('KRS.index')->with('error', 'Anda sudah memiliki KRS untuk semester ini.');
+            // Clean up old draft/rejected record
+            $existingKrs->delete(); 
         }
+
+        $status = $request->action === 'draft' ? 'draft' : 'diajukan';
 
         $krs = Krs::create([
             'mahasiswa_id' => $mahasiswa->mahasiswa_id,
             'semester_ajaran_id' => $activeSemester->semester_ajaran_id,
-            'status' => 'belum disetujui', 
+            'status' => $status, 
             'total_sks' => 0, 
-            'tanggal_pengajuan' => now(),
+            'tanggal_pengajuan' => $status === 'diajukan' ? now() : null,
         ]);
 
         $totalSks = 0;
@@ -126,7 +169,8 @@ class KrsController extends Controller
 
         $krs->update(['total_sks' => $totalSks]);
 
-        return redirect()->route('KRS.index')->with('success', 'KRS berhasil diajukan.');
+        $msg = $status === 'draft' ? 'Draft KRS berhasil disimpan.' : 'KRS berhasil diajukan.';
+        return redirect()->route('KRS.index')->with('success', $msg);
     }
 
     public function show($id)

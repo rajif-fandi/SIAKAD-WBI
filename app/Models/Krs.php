@@ -8,7 +8,7 @@ class Krs extends Model
 {
     protected $table = 'krs';
     protected $primaryKey = 'krs_id';
-    protected $fillable = ['mahasiswa_id', 'semester_ajaran_id', 'status', 'total_sks', 'tanggal_pengajuan', 'tanggal_validasi'];
+    protected $fillable = ['mahasiswa_id', 'semester_ajaran_id', 'status', 'total_sks', 'tanggal_pengajuan', 'tanggal_validasi', 'catatan'];
 
     public function mahasiswa()
     {

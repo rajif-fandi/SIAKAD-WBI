@@ -184,5 +184,138 @@ class AkademikSeeder extends Seeder
                 'link' => '#'
             ]
         );
+
+        // 5. Additional Data for Dosen Dashboard Demonstration
+        // Create more students for bimbingan
+        $extraStudents = [
+            ['npm' => '2023010002', 'nama' => 'Budi Doremi', 'user_email' => 'budi@gmail.com'],
+            ['npm' => '2023010003', 'nama' => 'Siti Aminah', 'user_email' => 'siti@gmail.com'],
+            ['npm' => '2023010004', 'nama' => 'Ahmad Fadli', 'user_email' => 'ahmad@gmail.com'],
+        ];
+
+        $activeSemester = SemesterAjaran::where('is_active', true)->first() ?? SemesterAjaran::orderBy('semester_ajaran_id', 'desc')->first();
+
+        foreach ($extraStudents as $sData) {
+            $sUser = User::updateOrCreate(
+                ['email' => $sData['user_email']],
+                [
+                    'name' => $sData['nama'],
+                    'password' => \Illuminate\Support\Facades\Hash::make('123456'),
+                    'role' => 'mahasiswa'
+                ]
+            );
+
+            $mhs = Mahasiswa::updateOrCreate(
+                ['user_id' => $sUser->id],
+                [
+                    'npm' => $sData['npm'],
+                    'nama' => $sData['nama'],
+                    'prodi_id' => $prodi->prodi_id,
+                    'dosen_wali_id' => $dosen->dosen_id,
+                    'semester_sekarang' => 3,
+                    'angkatan' => 2023
+                ]
+            );
+
+            // Create KRS submissions for them
+            $status = ($sData['npm'] == '2023010004') ? 'disetujui_wali' : 'diajukan';
+            \App\Models\Krs::updateOrCreate(
+                ['mahasiswa_id' => $mhs->mahasiswa_id, 'semester_ajaran_id' => $activeSemester->semester_ajaran_id],
+                [
+                    'status' => $status,
+                    'total_sks' => 20,
+                    'tanggal_pengajuan' => now()->subHours(rand(1, 24))
+                ]
+            );
+        }
+
+        // 6. Create many more students for testing grading lists
+        $studentNames = [
+            'Rizky Pratama', 'Salsabila Putri', 'Arif Budiman', 'Dewi Lestari', 
+            'Farhan Maulana', 'Gita Permata', 'Hendra Kusuma', 'Indah Cahyani',
+            'Joko Susilo', 'Kartika Sari', 'Lutfi Hakim', 'Maya Indah'
+        ];
+
+        foreach ($studentNames as $idx => $name) {
+            $email = strtolower(str_replace(' ', '.', $name)) . '@example.com';
+            $sUser = User::updateOrCreate(
+                ['email' => $email],
+                [
+                    'name' => $name,
+                    'password' => \Illuminate\Support\Facades\Hash::make('123456'),
+                    'role' => 'mahasiswa'
+                ]
+            );
+
+            $mhs = Mahasiswa::updateOrCreate(
+                ['user_id' => $sUser->id],
+                [
+                    'npm' => '20230101' . str_pad($idx, 2, '0', STR_PAD_LEFT),
+                    'nama' => $name,
+                    'prodi_id' => $prodi->prodi_id,
+                    'dosen_wali_id' => $dosen->dosen_id,
+                    'semester_sekarang' => 3,
+                    'angkatan' => 2023
+                ]
+            );
+
+            // Create KRS Approved
+            \App\Models\Krs::updateOrCreate(
+                ['mahasiswa_id' => $mhs->mahasiswa_id, 'semester_ajaran_id' => $activeSemester->semester_ajaran_id],
+                ['status' => 'disetujui_wali', 'total_sks' => 20, 'tanggal_pengajuan' => now()]
+            );
+        }
+
+        // 7. Assign Dosen as pengampu and create schedules for today (Thursday)
+        $myMatkuls = Matakuliah::whereIn('kode_mk', ['TRPL201', 'TRPL202', 'TRPL201'])->take(3)->get();
+        $days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+        $times = [
+            ['08:00:00', '10:00:00'],
+            ['10:00:00', '12:00:00'],
+            ['13:00:00', '15:00:00'],
+        ];
+
+        foreach ($myMatkuls as $idx => $mk) {
+            $myKelas = Kelas::updateOrCreate(
+                ['matakuliah_id' => $mk->matakuliah_id, 'prodi_id' => $prodi->prodi_id, 'semester_ajaran_id' => $activeSemester->semester_ajaran_id],
+                [
+                    'kode_kelas' => $mk->kode_mk . '-A',
+                    'bobot_kehadiran' => 10,
+                    'bobot_tugas' => 20,
+                    'bobot_uts' => 30,
+                    'bobot_uas' => 40
+                ]
+            );
+
+            DosenPengampu::updateOrCreate(
+                ['kelas_id' => $myKelas->kelas_id, 'dosen_id' => $dosen->dosen_id],
+                ['is_ketua' => true]
+            );
+
+            // Enroll ALL students to my classes
+            $allMhsInProdi = Mahasiswa::where('prodi_id', $prodi->prodi_id)->get();
+            foreach ($allMhsInProdi as $mhs) {
+                $krs = \App\Models\Krs::where('mahasiswa_id', $mhs->mahasiswa_id)->where('semester_ajaran_id', $activeSemester->semester_ajaran_id)->first();
+                if ($krs) {
+                    \App\Models\KrsDetail::updateOrCreate(
+                        ['krs_id' => $krs->krs_id, 'kelas_id' => $myKelas->kelas_id],
+                        ['tipe_pengambilan' => 'normal', 'status' => 'diambil']
+                    );
+                }
+            }
+
+            // Create schedule
+            $day = $days[$idx % count($days)];
+            if ($idx == 0) $day = 'Thu'; 
+
+            Jadwal::updateOrCreate(
+                ['kelas_id' => $myKelas->kelas_id, 'hari' => $day],
+                [
+                    'jam_mulai' => $times[$idx % count($times)][0],
+                    'jam_selesai' => $times[$idx % count($times)][1],
+                    'ruangan' => 'Lab Komputer ' . ($idx + 1)
+                ]
+            );
+        }
     }
 }

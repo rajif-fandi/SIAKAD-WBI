@@ -8,7 +8,16 @@ class Kelas extends Model
 {
     protected $table = 'kelas';
     protected $primaryKey = 'kelas_id';
-    protected $fillable = ['kode_kelas', 'matakuliah_id', 'prodi_id', 'semester_ajaran_id'];
+    protected $fillable = [
+        'kode_kelas', 
+        'matakuliah_id', 
+        'prodi_id', 
+        'semester_ajaran_id',
+        'bobot_kehadiran',
+        'bobot_tugas',
+        'bobot_uts',
+        'bobot_uas'
+    ];
 
     public function matakuliah()
     {
@@ -33,5 +42,10 @@ class Kelas extends Model
     public function dosenPengampu()
     {
         return $this->hasMany(DosenPengampu::class, 'kelas_id');
+    }
+
+    public function krsDetails()
+    {
+        return $this->hasMany(KrsDetail::class, 'kelas_id');
     }
 }

@@ -11,7 +11,7 @@ class Pertemuan extends Model
 
     protected $table = 'pertemuan';
     protected $primaryKey = 'pertemuan_id';
-    protected $fillable = ['jadwal_id', 'tanggal', 'pertemuan_ke'];
+    protected $fillable = ['jadwal_id', 'tanggal', 'pertemuan_ke', 'materi_pembahasan', 'catatan'];
 
     public function jadwal()
     {
