@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="">
-    <div class="relative mb-8 overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#047857] via-[#065f46] to-[#064e3b] p-10 text-white shadow-2xl">
+    <div class="relative mb-8 overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#1F653F] via-[#2F8054] to-[#47AF76] p-10 text-white shadow-2xl">
         <div class="relative flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-[10px] font-black uppercase tracking-[0.2em] mb-4">

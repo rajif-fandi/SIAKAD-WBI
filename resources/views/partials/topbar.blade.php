@@ -68,6 +68,28 @@
     }
     @endphp
 
+    @php     
+    $user = Auth::user();
+    $notifications = $user
+        ? \App\Models\Notifikasi::where('user_id', $user->id)->latest()->get()
+        : collect();
+
+    $unreadNotifications = $notifications->where('is_read', false);
+    $unreadCount = $unreadNotifications->count();
+
+    $title = 'Dashboard';
+    if ($user->role === 'admin') {
+        $title = 'Dashboard Admin';
+        if (request()->routeIs('admin.mahasiswa.mahasiswa')) {
+            $title = 'Kelola Mahasiswa';
+        } elseif (request()->routeIs('admin.dosen.index')) {
+            $title = 'Kelola Dosen';
+        } elseif (request()->routeIs('admin.mahasiswa.aktivasiAkun')) {
+            $title = 'Aktivasi Akun Mahasiswa';
+        }
+    }
+    @endphp
+
     <nav class="sticky top-0 z-50 w-full border-b border-gray-200/80 bg-white/80 backdrop-blur-xl">
         <div class="px-6 py-4">
             <div class="flex items-center justify-between">

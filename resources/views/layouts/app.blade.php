@@ -19,6 +19,9 @@
 @elseif(Auth::user()->role === 'dosen')
     @include('partials.topbar')
     @include('partials.navbarDosen')
+@elseif(Auth::user()->role === 'admin')
+    @include('partials.topbar')
+    @include('partials.navbarAdmin')
 @endif
 
 

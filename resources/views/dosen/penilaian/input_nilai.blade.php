@@ -3,7 +3,7 @@
 @section('content')
 <div class="px-8 py-8">
     {{-- Header Section --}}
-    <div class="bg-gradient-to-r from-indigo-700 to-indigo-600 text-white p-10 rounded-[2.5rem] mb-8 shadow-2xl relative overflow-hidden">
+    <div class="bg-gradient-to-br from-[#1F653F] via-[#2F8054] to-[#47AF76] text-white p-10 rounded-[2.5rem] mb-8 shadow-2xl relative overflow-hidden">
         <div class="relative z-10">
             <div class="flex flex-col md:flex-row items-center justify-between gap-6">
                 <div class="flex items-center gap-6">

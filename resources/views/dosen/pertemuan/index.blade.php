@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="">
-    <div class="relative mb-8 overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#1e3a8a] via-[#1e40af] to-[#1d4ed8] p-10 text-white shadow-2xl">
+    <div class="relative mb-8 overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#1F653F] via-[#2F8054] to-[#47AF76] p-10 text-white shadow-2xl">
         <div class="relative flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
                 <h2 class="text-4xl font-black mb-2 tracking-tight">Riwayat Pertemuan</h2>

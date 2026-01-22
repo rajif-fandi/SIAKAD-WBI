@@ -26,12 +26,15 @@ class LoginController extends Controller
             $request->session()->regenerate();
 
             $user = Auth::user();
+            
 
             if ($user->role === 'mahasiswa') {
                 return redirect()->route('dashboard.index');
             } elseif ($user->role === 'dosen') {
                 return redirect()->route('dosen.dashboard');
-            } else {
+            }elseif ($user->role === 'admin'){ 
+                return redirect()->route('admin.dashboardAdmin');
+            }else {
                 Auth::logout();
                 return redirect('/')->withErrors('Role tidak dikenali!');
             }

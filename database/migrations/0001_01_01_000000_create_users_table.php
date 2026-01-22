@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
-            $table->enum('role', ['mahasiswa','dosen'])->default('mahasiswa');
+            $table->enum('role', ['mahasiswa','dosen', 'admin'])->default('mahasiswa');
             $table->rememberToken();
             $table->timestamps();
         });

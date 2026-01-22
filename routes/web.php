@@ -9,6 +9,7 @@ use App\Http\Controllers\Mahasiswa\KeberhasilanStudiController;
 use App\Http\Controllers\Mahasiswa\KehadiranController;
 use App\Http\Controllers\Mahasiswa\KonsultasiNilaiController;
 use App\Http\Controllers\Mahasiswa\ProfileController;
+use FontLib\Table\Type\name;
 
 Route::get('/', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
@@ -78,4 +79,32 @@ Route::middleware(['auth', 'role:dosen'])->group(function () {
     Route::post('/dosen/penilaian/kelas/{id}/weights', [App\Http\Controllers\Dosen\PenilaianController::class, 'updateWeights'])->name('dosen.penilaian.weights.update');
     Route::post('/dosen/penilaian/simpan', [App\Http\Controllers\Dosen\PenilaianController::class, 'store'])->name('dosen.penilaian.store');
     Route::get('/dosen/profilDosen', function () { return view('dosen.profilDosen'); })->name('dosen.profilDosen');
+});
+
+
+// Admin Routes
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin/dashboardAdmin', function () {
+        return view('admin.dashboardAdmin');
+    })->name('admin.dashboardAdmin');
+
+    // Kelola Mahasiswa
+    Route::get('/admin/mahasiswa', function () {
+        return view('admin.mahasiswa.mahasiswa');
+    })->name('admin.mahasiswa.mahasiswa');
+
+     // Form Tambah Mahasiswa
+    Route::get('/admin/mahasiswa/form', function () {
+        return view('admin.mahasiswa.form');
+    })->name('admin.mahasiswa.form');
+
+    //Kelola Dosen
+    Route::get('/admin/dosen', function () {
+        return view('admin.dosen.index');
+    })->name('admin.dosen.index');
+
+    //Aktivasi Akun
+    Route::get('/admin/mahasiswa/aktivasiAkun', function () {
+        return view('admin.mahasiswa.aktivasiAkun');
+    })->name('admin.mahasiswa.aktivasiAkun');
 });
