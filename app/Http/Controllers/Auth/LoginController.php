@@ -34,6 +34,8 @@ class LoginController extends Controller
                 return redirect()->route('dosen.dashboard');
             }elseif ($user->role === 'admin'){ 
                 return redirect()->route('admin.dashboardAdmin');
+            }elseif ($user->role === 'akademik'){
+                return redirect()->route('akademik.dashboardAkademik');
             }else {
                 Auth::logout();
                 return redirect('/')->withErrors('Role tidak dikenali!');

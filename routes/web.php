@@ -108,3 +108,30 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         return view('admin.mahasiswa.aktivasiAkun');
     })->name('admin.mahasiswa.aktivasiAkun');
 });
+
+//Akademik ROUTES
+Route::middleware(['auth', 'role:akademik'])->group(function () {
+    Route::get('/akademik/dashboardAkademik', function () {
+        return view('akademik.dashboardAkademik');
+    })->name('akademik.dashboardAkademik');
+
+    //kelola matkul
+    Route::get('/akademik/matakuliah/index', function () {
+        return view('akademik.matakuliah.index');
+    })->name('akademik.matakuliah.index');
+
+    //kelola kurikulum
+    Route::get('/akademik/kurikulum/index', function () {
+        return view('akademik.kurikulum.index');
+    })->name('akademik.kurikulum.index');
+
+    //Kelola Kelas
+    Route::get('/akademik/kelas/index', function () {
+        return view('akademik.kelas.index');
+    })->name('akademik.kelas.index');
+
+    //Kelola Jadwal
+    Route::get('/akademik/jadwal/index', function () {
+        return view('akademik.jadwal.index');
+    })->name('akademik.jadwal.index');
+});

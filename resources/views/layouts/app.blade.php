@@ -12,25 +12,32 @@
 
 </head>
 
-<body class="bg-gray-100">
-@if(Auth::user()->role === 'mahasiswa')
-    @include('partials.topbar')
-    @include('partials.navbar')
-@elseif(Auth::user()->role === 'dosen')
-    @include('partials.topbar')
-    @include('partials.navbarDosen')
-@elseif(Auth::user()->role === 'admin')
-    @include('partials.topbar')
-    @include('partials.navbarAdmin')
-@endif
+<body class="bg-gray-100 flex flex-col min-h-screen">
 
+    {{-- Topbar & Sidebar --}}
+    @if(Auth::user()->role === 'mahasiswa')
+        @include('partials.topbar')
+        @include('partials.navbar')
+    @elseif(Auth::user()->role === 'dosen')
+        @include('partials.topbar')
+        @include('partials.navbarDosen')
+    @elseif(Auth::user()->role === 'admin')
+        @include('partials.topbar')
+        @include('partials.navbarAdmin')
+    @elseif(Auth::user()->role === 'akademik')
+        @include('partials.topbar')
+        @include('partials.navbarAkademik')
+    @endif
 
-<main class="pt-[43px] lg:ml-64 px-6 py-6 min-h-screen transition-all">
-    @yield('content')
-</main>
+    {{-- Content --}}
+    <div class="flex-grow">
+        <main class="pt-[43px] lg:ml-64 px-6 py-6 transition-all">
+            @yield('content')
+        </main>
+    </div>
 
+    {{-- Footer --}}
+    @include('Footer.index')
 
     @stack('scripts')
-
 </body>
-</html>

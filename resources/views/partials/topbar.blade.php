@@ -90,6 +90,27 @@
     }
     @endphp
 
+    @php
+    $user = Auth::user();
+    $notifications = $user ?\app\Models\Notifikasi::where('user_id', $user->id)->latest()->get() : collect();
+
+    $unreadNotifications = $notifications->where('is_read', false);
+    $unreadCount = $unreadNotifications->count();
+
+    $title = 'Dashboard';
+    if ($user->role === 'Akademik') {
+        $title = 'Dashboard Akademik';
+    }elseif (request()->routeIs('akademik.matakuliah.index')){
+        $title = 'Kelola Matakuliah';
+    }elseif (request()->routeIs('akademik.kurikulum.index')){
+        $title = 'Kelola Kurikulum';
+    }elseif (request()->routeIs('akademik.kelas.index')){
+        $title = 'Kelola Kelas';
+    }elseif (request()->routeIs('akademik.jadwal.index')){
+        $title = 'Kelola Jadwal';
+    }
+    @endphp
+
     <nav class="sticky top-0 z-50 w-full border-b border-gray-200/80 bg-white/80 backdrop-blur-xl">
         <div class="px-6 py-4">
             <div class="flex items-center justify-between">
