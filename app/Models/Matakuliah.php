@@ -11,7 +11,12 @@ class Matakuliah extends Model
 
     protected $table = 'matakuliah';
     protected $primaryKey = 'matakuliah_id';
-    protected $fillable = ['kode_mk', 'nama_mk', 'sks', 'semester_paket', 'deskripsi'];
+    protected $fillable = ['kode_mk', 'nama_mk', 'sks', 'semester_paket', 'deskripsi', 'prodi_id', 'jenis', 'status'];
+
+    public function prodi()
+    {
+        return $this->belongsTo(Prodi::class, 'prodi_id');
+    }
 
     public function kelas()
     {

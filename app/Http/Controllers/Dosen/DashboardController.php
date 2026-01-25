@@ -51,13 +51,13 @@ class DashboardController extends Controller
 
         // 3. Jadwal Hari Ini
         $dayNames = [
-            'Sunday' => 'Sun',
-            'Monday' => 'Mon',
-            'Tuesday' => 'Tue',
-            'Wednesday' => 'Wed',
-            'Thursday' => 'Thu',
-            'Friday' => 'Fri',
-            'Saturday' => 'Sat'
+            'Sunday' => 'Minggu',
+            'Monday' => 'Senin',
+            'Tuesday' => 'Selasa',
+            'Wednesday' => 'Rabu',
+            'Thursday' => 'Kamis',
+            'Friday' => 'Jumat',
+            'Saturday' => 'Sabtu'
         ];
         $today = $dayNames[Carbon::now()->format('l')];
 

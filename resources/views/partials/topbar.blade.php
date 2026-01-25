@@ -216,7 +216,7 @@
                             </div>
                             <div class="hidden text-left sm:block">
                                 <p class="text-xs font-bold text-gray-700 group-hover:text-emerald-700 transition-colors">{{ $mahasiswa->nama ?? $user->name }}</p>
-                                <p class="text-[10px] text-gray-500">{{ $user->role == 'mahasiswa' ? 'Mahasiswa' : 'Dosen' }}</p>
+                                <p class="text-[10px] text-gray-500">{{ ucfirst($user->role) }}</p>
                             </div>
                             <svg class="hidden h-4 w-4 text-gray-400 sm:block group-hover:text-emerald-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
@@ -224,7 +224,14 @@
                         {{-- Profile Dropdown Menu --}}
                         <div id="profile-menu" class="absolute right-0 mt-3 hidden w-48 origin-top-right rounded-2xl border border-gray-100 bg-white shadow-2xl ring-1 ring-black/5 focus:outline-none overflow-hidden">
                             <div class="py-1">
-                                <a href="{{ route('profilMahasiswa.index') }}" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                                @php
+                                    $profileRoute = '#';
+                                    if ($user->role === 'mahasiswa') $profileRoute = route('profilMahasiswa.index');
+                                    elseif ($user->role === 'dosen') $profileRoute = route('dosen.profilDosen');
+                                    elseif ($user->role === 'admin') $profileRoute = route('admin.profile');
+                                    elseif ($user->role === 'akademik') $profileRoute = route('akademik.profile');
+                                @endphp
+                                <a href="{{ $profileRoute }}" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
                                     <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                                     <span>Profil Saya</span>
                                 </a>

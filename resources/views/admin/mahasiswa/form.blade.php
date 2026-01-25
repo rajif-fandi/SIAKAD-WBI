@@ -11,8 +11,8 @@
             </svg>
         </a>
         <div>
-            <h1 class="text-3xl font-bold text-gray-800">Form Mahasiswa</h1>
-            <p class="text-gray-600">Lengkapi biodata mahasiswa dengan teliti</p>
+            <h1 class="text-3xl font-bold text-gray-800">{{ isset($mahasiswa) ? 'Edit Mahasiswa' : 'Form Mahasiswa' }}</h1>
+            <p class="text-gray-600">{{ isset($mahasiswa) ? 'Update data biodata mahasiswa' : 'Lengkapi biodata mahasiswa dengan teliti' }}</p>
         </div>
     </div>
 </div>
@@ -47,7 +47,11 @@
     </div>
 </div>
 
-<form id="mahasiswaForm">
+<form id="mahasiswaForm" action="{{ isset($mahasiswa) ? route('admin.mahasiswa.update', $mahasiswa->mahasiswa_id) : route('admin.mahasiswa.store') }}" method="POST">
+    @csrf
+    @if(isset($mahasiswa))
+        @method('PUT')
+    @endif
     {{-- Tab 1: Data Pribadi --}}
     <div id="content-pribadi" class="tab-content">
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
@@ -62,19 +66,19 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">NIM <span class="text-red-500">*</span></label>
-                    <input type="text" name="nim" required class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    <p class="text-xs text-gray-500 mt-1">Contoh: 2305010034</p>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">NPM <span class="text-red-500">*</span></label>
+                    <input type="text" name="npm" value="{{ old('npm', $mahasiswa->npm ?? '') }}" required class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <p class="text-xs text-blue-600 mt-1 font-medium italic">Login: [NPM]@wbi.ac.id</p>
                 </div>
 
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Nama Lengkap <span class="text-red-500">*</span></label>
-                    <input type="text" name="nama" required class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <input type="text" name="nama" value="{{ old('nama', $mahasiswa->nama ?? '') }}" required class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                 </div>
 
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">NIK</label>
-                    <input type="text" name="nik" maxlength="16" class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <input type="text" name="nik" value="{{ old('nik', $mahasiswa->nik ?? '') }}" maxlength="16" class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     <p class="text-xs text-gray-500 mt-1">16 digit</p>
                 </div>
 
@@ -82,50 +86,50 @@
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Jenis Kelamin <span class="text-red-500">*</span></label>
                     <select name="jenis_kelamin" required class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
                         <option value="">Pilih Jenis Kelamin</option>
-                        <option value="L">Laki-laki</option>
-                        <option value="P">Perempuan</option>
+                        <option value="L" {{ (old('jenis_kelamin', $mahasiswa->jenis_kelamin ?? '') == 'L') ? 'selected' : '' }}>Laki-laki</option>
+                        <option value="P" {{ (old('jenis_kelamin', $mahasiswa->jenis_kelamin ?? '') == 'P') ? 'selected' : '' }}>Perempuan</option>
                     </select>
                 </div>
 
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Tempat Lahir</label>
-                    <input type="text" name="tempat_lahir" class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <input type="text" name="tempat_lahir" value="{{ old('tempat_lahir', $mahasiswa->tempat_lahir ?? '') }}" class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                 </div>
 
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Tanggal Lahir</label>
-                    <input type="date" name="tanggal_lahir" class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <input type="date" name="tanggal_lahir" value="{{ old('tanggal_lahir', $mahasiswa->tanggal_lahir ?? '') }}" class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                 </div>
 
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Agama</label>
                     <select name="agama" class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
                         <option value="">Pilih Agama</option>
-                        <option>Islam</option>
-                        <option>Kristen</option>
-                        <option>Katolik</option>
-                        <option>Hindu</option>
-                        <option>Buddha</option>
-                        <option>Konghucu</option>
+                        <option {{ old('agama', $mahasiswa->agama ?? '') == 'Islam' ? 'selected' : '' }}>Islam</option>
+                        <option {{ old('agama', $mahasiswa->agama ?? '') == 'Kristen' ? 'selected' : '' }}>Kristen</option>
+                        <option {{ old('agama', $mahasiswa->agama ?? '') == 'Katolik' ? 'selected' : '' }}>Katolik</option>
+                        <option {{ old('agama', $mahasiswa->agama ?? '') == 'Hindu' ? 'selected' : '' }}>Hindu</option>
+                        <option {{ old('agama', $mahasiswa->agama ?? '') == 'Buddha' ? 'selected' : '' }}>Buddha</option>
+                        <option {{ old('agama', $mahasiswa->agama ?? '') == 'Konghucu' ? 'selected' : '' }}>Konghucu</option>
                     </select>
                 </div>
 
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Kewarganegaraan</label>
                     <select name="kewarganegaraan" class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
-                        <option>Indonesia</option>
-                        <option>Asing</option>
+                        <option {{ old('kewarganegaraan', $mahasiswa->kewarganegaraan ?? 'Indonesia') == 'Indonesia' ? 'selected' : '' }}>Indonesia</option>
+                        <option {{ old('kewarganegaraan', $mahasiswa->kewarganegaraan ?? '') == 'Asing' ? 'selected' : '' }}>Asing</option>
                     </select>
                 </div>
 
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">No. Telepon</label>
-                    <input type="tel" name="no_telp" class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <input type="tel" name="no_telp" value="{{ old('no_telp', $mahasiswa->no_hp ?? '') }}" class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                 </div>
 
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Email Pribadi <span class="text-red-500">*</span></label>
-                    <input type="email" name="email" required class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <input type="email" name="email" value="{{ old('email', $mahasiswa->email_pribadi ?? $mahasiswa->user->email ?? '') }}" required {{ isset($mahasiswa) ? 'readonly bg-gray-50' : '' }} class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                 </div>
 
                 <div>
@@ -134,6 +138,13 @@
                     <p class="text-xs text-gray-500 mt-1">Max 2MB, format: JPG, PNG</p>
                 </div>
 
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Password <span class="text-xs font-normal text-gray-500">(Opsional)</span></label>
+                    <input type="password" name="password" class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <p class="text-xs text-blue-600 mt-1 font-medium italic">
+                        {{ isset($mahasiswa) ? 'Biarkan kosong jika tidak ingin mengubah password.' : 'Default: 12345678 jika tidak diisi.' }}
+                    </p>
+                </div>
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Status Pernikahan</label>
                     <select name="status_nikah" class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
@@ -165,7 +176,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">Nama Ayah</label>
-                            <input type="text" name="nama_ayah" class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <input type="text" name="nama_ayah" value="{{ old('nama_ayah', $mahasiswa->nama_ayah ?? '') }}" class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                         </div>
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">Pekerjaan Ayah</label>
@@ -203,7 +214,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">Nama Ibu Kandung</label>
-                            <input type="text" name="nama_ibu" class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <input type="text" name="nama_ibu" value="{{ old('nama_ibu', $mahasiswa->nama_ibu ?? '') }}" class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                         </div>
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">Pekerjaan Ibu</label>
@@ -268,7 +279,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="md:col-span-2">
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Alamat Lengkap</label>
-                    <textarea name="alamat" rows="3" class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                    <textarea name="alamat" rows="3" class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">{{ old('alamat', $mahasiswa->alamat_detail ?? '') }}</textarea>
                 </div>
 
                 <div>
@@ -343,11 +354,11 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Program Studi <span class="text-red-500">*</span></label>
-                    <select name="prodi" required class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                    <select name="prodi_id" required class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
                         <option value="">Pilih Program Studi</option>
-                        <option>Rekayasa Perangkat Lunak</option>
-                        <option>Teknik Informatika</option>
-                        <option>Sistem Informasi</option>
+                        @foreach($prodis as $prodi)
+                            <option value="{{ $prodi->prodi_id }}" {{ (old('prodi_id', $mahasiswa->prodi_id ?? '') == $prodi->prodi_id) ? 'selected' : '' }}>{{ $prodi->nama_prodi }}</option>
+                        @endforeach
                     </select>
                 </div>
 
@@ -355,11 +366,9 @@
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Angkatan <span class="text-red-500">*</span></label>
                     <select name="angkatan" required class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
                         <option value="">Pilih Angkatan</option>
-                        <option>2025</option>
-                        <option>2024</option>
-                        <option>2023</option>
-                        <option>2022</option>
-                        <option>2021</option>
+                        @for($year = date('Y') + 1; $year >= 2020; $year--)
+                            <option value="{{ $year }}" {{ (old('angkatan', $mahasiswa->angkatan ?? '') == $year) ? 'selected' : '' }}>{{ $year }}</option>
+                        @endfor
                     </select>
                 </div>
 
@@ -374,22 +383,20 @@
 
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Dosen Pembimbing Akademik</label>
-                    <select name="dosen_pa" class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                    <select name="dosen_wali_id" class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
                         <option value="">Pilih Dosen PA</option>
-                        <option>Dr. Rizki Ramadhansyah, S.T., M.Kom</option>
-                        <option>Dr. Ahmad Yani, S.Kom., M.T</option>
-                        <option>Ir. Siti Nurhaliza, M.Kom</option>
+                        @foreach($dosens as $dosen)
+                            <option value="{{ $dosen->dosen_id }}" {{ (old('dosen_wali_id', $mahasiswa->dosen_wali_id ?? '') == $dosen->dosen_id) ? 'selected' : '' }}>{{ $dosen->nama }}</option>
+                        @endforeach
                     </select>
                 </div>
 
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Status Mahasiswa</label>
                     <select name="status" class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
-                        <option>Aktif</option>
-                        <option>Cuti</option>
-                        <option>Non-Aktif</option>
-                        <option>Lulus</option>
-                        <option>DO</option>
+                        @foreach(['Aktif', 'Cuti', 'Non-Aktif', 'Lulus', 'Keluar', 'DO'] as $st)
+                            <option value="{{ $st }}" {{ (old('status', $mahasiswa->status ?? 'Aktif') == $st) ? 'selected' : '' }}>{{ $st }}</option>
+                        @endforeach
                     </select>
                 </div>
 
@@ -403,11 +410,11 @@
 
     {{-- Action Buttons --}}
     <div class="flex items-center justify-end gap-3 mb-6">
-        <a href="#" class="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition">
+        <a href="{{ route('admin.mahasiswa.mahasiswa') }}" class="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition">
             Batal
         </a>
         <button type="submit" class="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl font-semibold transition shadow-lg">
-            Simpan Data Mahasiswa
+            {{ isset($mahasiswa) ? 'Update Data Mahasiswa' : 'Simpan Data Mahasiswa' }}
         </button>
     </div>
 </form>
@@ -437,37 +444,6 @@ function showTab(tabName) {
     activeTab.classList.remove('text-gray-600', 'hover:text-gray-900', 'hover:bg-gray-50');
 }
 
-// Form submission
-document.getElementById('mahasiswaForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    // Validate required fields
-    const requiredFields = this.querySelectorAll('[required]');
-    let isValid = true;
-    
-    requiredFields.forEach(field => {
-        if (!field.value.trim()) {
-            isValid = false;
-            field.classList.add('border-red-500');
-        } else {
-            field.classList.remove('border-red-500');
-        }
-    });
-    
-    if (!isValid) {
-        alert('Mohon lengkapi semua field yang wajib diisi (*)');
-        return;
-    }
-    
-    // Get form data
-    const formData = new FormData(this);
-    const data = Object.fromEntries(formData.entries());
-    
-    console.log('Form Data:', data);
-    alert('Data mahasiswa berhasil disimpan!');
-    
-    // Redirect or reload
-    // window.location.href = '/admin/mahasiswa';
-});
+// Form submission removed, using standard form POST
 </script>
 @endpush

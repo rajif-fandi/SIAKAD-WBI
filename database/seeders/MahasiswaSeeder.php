@@ -13,7 +13,7 @@ class MahasiswaSeeder extends Seeder
         DB::transaction(function () {
 
             $userId = DB::table('users')
-                ->where('email', 'mahasiswa@gmail.com')
+                ->where('email', '2023010001@wbi.ac.id')
                 ->value('id');
 
             if (!$userId) {
@@ -61,7 +61,7 @@ class MahasiswaSeeder extends Seeder
 
             // 4. DOSEN (wali)
             $dosenUserId = DB::table('users')
-                ->where('email', 'dosen@gmail.com')
+                ->where('email', '1987654321@wbi.ac.id')
                 ->value('id');
 
             if (!$dosenUserId) {

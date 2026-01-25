@@ -13,6 +13,12 @@ class Kelas extends Model
         'matakuliah_id', 
         'prodi_id', 
         'semester_ajaran_id',
+        'ruangan',
+        'hari',
+        'jam_mulai',
+        'jam_selesai',
+        'kapasitas',
+        'status',
         'bobot_kehadiran',
         'bobot_tugas',
         'bobot_uts',
@@ -42,6 +48,11 @@ class Kelas extends Model
     public function dosenPengampu()
     {
         return $this->hasMany(DosenPengampu::class, 'kelas_id');
+    }
+
+    public function dosen()
+    {
+        return $this->hasOne(DosenPengampu::class, 'kelas_id')->where('is_ketua', 1)->with('dosen');
     }
 
     public function krsDetails()

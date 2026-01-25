@@ -45,11 +45,11 @@
             </div>
         </div>
         
-        <select class="border-2 border-gray-200 rounded-xl px-5 py-3.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#1F653F] focus:border-[#1F653F] bg-white transition-all hover:border-[#2F8054]">
+        <select name="prodi_id" onchange="this.form.submit()" class="border-2 border-gray-200 rounded-xl px-5 py-3.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#1F653F] focus:border-[#1F653F] bg-white transition-all hover:border-[#2F8054]">
             <option value="">Semua Prodi</option>
-            <option>Rekayasa Perangkat Lunak</option>
-            <option>Teknik Informatika</option>
-            <option>Sistem Informasi</option>
+            @foreach($prodis as $p)
+                <option value="{{ $p->prodi_id }}" {{ request('prodi_id') == $p->prodi_id ? 'selected' : '' }}>{{ $p->nama_prodi }}</option>
+            @endforeach
         </select>
 
         <select class="border-2 border-gray-200 rounded-xl px-5 py-3.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#1F653F] focus:border-[#1F653F] bg-white transition-all hover:border-[#2F8054]">
@@ -86,7 +86,7 @@
                 </svg>
             </div>
             <p class="text-sm text-gray-600 font-semibold mb-2">Total Mata Kuliah</p>
-            <p class="text-4xl font-extrabold text-gray-900 mb-1">156</p>
+            <p class="text-4xl font-extrabold text-gray-900 mb-1">{{ $stats['total'] }}</p>
             <div class="flex items-center gap-2">
                 <span class="text-xs px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full font-semibold">Semua Prodi</span>
             </div>
@@ -102,9 +102,9 @@
                 </svg>
             </div>
             <p class="text-sm text-gray-600 font-semibold mb-2">Mata Kuliah Wajib</p>
-            <p class="text-4xl font-extrabold text-gray-900 mb-1">98</p>
+            <p class="text-4xl font-extrabold text-gray-900 mb-1">{{ $stats['wajib'] }}</p>
             <div class="flex items-center gap-2">
-                <span class="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full font-semibold">62.8% total</span>
+                <span class="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full font-semibold">Wajib</span>
             </div>
         </div>
     </div>
@@ -119,9 +119,9 @@
                 </svg>
             </div>
             <p class="text-sm text-gray-600 font-semibold mb-2">Mata Kuliah Pilihan</p>
-            <p class="text-4xl font-extrabold text-gray-900 mb-1">58</p>
+            <p class="text-4xl font-extrabold text-gray-900 mb-1">{{ $stats['pilihan'] }}</p>
             <div class="flex items-center gap-2">
-                <span class="text-xs px-2 py-1 bg-amber-100 text-amber-700 rounded-full font-semibold">37.2% total</span>
+                <span class="text-xs px-2 py-1 bg-amber-100 text-amber-700 rounded-full font-semibold">Pilihan</span>
             </div>
         </div>
     </div>
@@ -135,7 +135,7 @@
                 </svg>
             </div>
             <p class="text-sm text-gray-600 font-semibold mb-2">Total SKS</p>
-            <p class="text-4xl font-extrabold text-gray-900 mb-1">428</p>
+            <p class="text-4xl font-extrabold text-gray-900 mb-1">{{ $stats['total_sks'] }}</p>
             <div class="flex items-center gap-2">
                 <span class="text-xs px-2 py-1 bg-purple-100 text-purple-700 rounded-full font-semibold">Akumulasi</span>
             </div>
@@ -160,44 +160,35 @@
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
-                @php
-                    $matkul = [
-                        ['kode' => 'IFI-322507', 'nama' => 'Pemrograman Web Lanjut', 'sks' => 3, 'semester' => 5, 'prodi' => 'RPL', 'jenis' => 'Gabungan', 'status' => 'Wajib'],
-                        ['kode' => 'IFI-322203', 'nama' => 'Analisis dan Desain Perangkat Lunak', 'sks' => 2, 'semester' => 4, 'prodi' => 'RPL', 'jenis' => 'Teori', 'status' => 'Wajib'],
-                        ['kode' => 'IFI-332308', 'nama' => 'Perancangan Antarmuka Pengguna', 'sks' => 3, 'semester' => 5, 'prodi' => 'RPL', 'jenis' => 'Gabungan', 'status' => 'Wajib'],
-                        ['kode' => 'IFI-322302', 'nama' => 'Metode Pengembangan Perangkat Lunak', 'sks' => 2, 'semester' => 4, 'prodi' => 'RPL', 'jenis' => 'Teori', 'status' => 'Wajib'],
-                        ['kode' => 'IFI-422401', 'nama' => 'Kecerdasan Buatan', 'sks' => 3, 'semester' => 7, 'prodi' => 'RPL', 'jenis' => 'Teori', 'status' => 'Pilihan'],
-                    ];
-                @endphp
-
-                @foreach($matkul as $mk)
+                @foreach($matakuliah as $mk)
                 <tr class="hover:bg-gradient-to-r hover:from-emerald-50/50 hover:to-transparent transition-all group">
                     <td class="px-6 py-5">
-                        <span class="text-sm font-bold font-mono text-gray-900 bg-gray-100 px-3 py-1.5 rounded-lg">{{ $mk['kode'] }}</span>
+                        <span class="text-sm font-bold font-mono text-gray-900 bg-gray-100 px-3 py-1.5 rounded-lg">{{ $mk->kode_mk }}</span>
                     </td>
                     <td class="px-6 py-5">
-                        <p class="text-sm font-bold text-gray-900">{{ $mk['nama'] }}</p>
+                        <p class="text-sm font-bold text-gray-900">{{ $mk->nama_mk }}</p>
                     </td>
                     <td class="px-6 py-5 text-center">
-                        <span class="inline-block bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-md">{{ $mk['sks'] }} SKS</span>
+                        <span class="inline-block bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-md">{{ $mk->sks }} SKS</span>
                     </td>
                     <td class="px-6 py-5 text-center">
-                        <span class="text-sm font-bold text-gray-800">{{ $mk['semester'] }}</span>
+                        <span class="text-sm font-bold text-gray-800">{{ $mk->semester_paket }}</span>
                     </td>
                     <td class="px-6 py-5">
-                        <span class="inline-block bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-md">{{ $mk['prodi'] }}</span>
+                        <span class="inline-block bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-md">{{ $mk->prodi->nama_prodi ?? '-' }}</span>
                     </td>
                     <td class="px-6 py-5 text-center">
-                        @if($mk['jenis'] == 'Gabungan')
-                            <span class="inline-block bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-md">{{ $mk['jenis'] }}</span>
-                        @elseif($mk['jenis'] == 'Teori')
-                            <span class="inline-block bg-gradient-to-r from-emerald-500 to-green-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-md">{{ $mk['jenis'] }}</span>
-                        @else
-                            <span class="inline-block bg-gradient-to-r from-amber-500 to-orange-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-md">{{ $mk['jenis'] }}</span>
-                        @endif
+                        @php
+                            $jenisColor = [
+                                'Gabungan' => 'cyan-500 to-blue-600',
+                                'Teori' => 'emerald-500 to-green-600',
+                                'Praktikum' => 'amber-500 to-orange-600'
+                            ][$mk->jenis] ?? 'gray-500 to-gray-600';
+                        @endphp
+                        <span class="inline-block bg-gradient-to-r from-{{ $jenisColor }} text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-md">{{ $mk->jenis }}</span>
                     </td>
                     <td class="px-6 py-5 text-center">
-                        @if($mk['status'] == 'Wajib')
+                        @if($mk->status == 'Wajib')
                             <span class="inline-flex items-center gap-1.5 bg-gradient-to-r from-red-500 to-rose-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-md">
                                 <span class="w-1.5 h-1.5 bg-white rounded-full"></span>
                                 Wajib
@@ -217,16 +208,20 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                                 </svg>
                             </button>
-                            <button onclick="openEditModal('{{ $mk['kode'] }}')" class="p-2.5 bg-emerald-50 hover:bg-gradient-to-br hover:from-[#1F653F] hover:to-[#2F8054] text-emerald-600 hover:text-white rounded-xl transition-all shadow-sm hover:shadow-md" title="Edit">
+                            <button onclick='openEditModal(@json($mk))' class="p-2.5 bg-emerald-50 hover:bg-gradient-to-br hover:from-[#1F653F] hover:to-[#2F8054] text-emerald-600 hover:text-white rounded-xl transition-all shadow-sm hover:shadow-md" title="Edit">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                 </svg>
                             </button>
-                            <button onclick="deleteMatkul('{{ $mk['kode'] }}')" class="p-2.5 bg-red-50 hover:bg-gradient-to-br hover:from-red-500 hover:to-red-600 text-red-600 hover:text-white rounded-xl transition-all shadow-sm hover:shadow-md" title="Hapus">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                </svg>
-                            </button>
+                            <form action="{{ route('akademik.matakuliah.delete', $mk->matakuliah_id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus mata kuliah ini?')" class="inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="p-2.5 bg-red-50 hover:bg-gradient-to-br hover:from-red-500 hover:to-red-600 text-red-600 hover:text-white rounded-xl transition-all shadow-sm hover:shadow-md" title="Hapus">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </button>
+                            </form>
                         </div>
                     </td>
                 </tr>
@@ -236,21 +231,8 @@
     </div>
 
     {{-- Pagination --}}
-    <div class="bg-gradient-to-r from-gray-50 to-white px-6 py-5 border-t border-gray-200 flex items-center justify-between">
-        <div class="text-sm text-gray-600 font-medium">
-            Menampilkan <span class="font-bold text-gray-900">1-5</span> dari <span class="font-bold text-gray-900">156</span> mata kuliah
-        </div>
-        <div class="flex items-center gap-2">
-            <button class="px-4 py-2 border-2 border-gray-300 rounded-xl text-sm font-semibold hover:bg-gray-100 hover:border-gray-400 transition-all">
-                Previous
-            </button>
-            <button class="px-4 py-2 bg-gradient-to-r from-[#1F653F] to-[#2F8054] text-white rounded-xl text-sm font-bold shadow-md">1</button>
-            <button class="px-4 py-2 border-2 border-gray-300 rounded-xl text-sm font-semibold hover:bg-gray-100 hover:border-gray-400 transition-all">2</button>
-            <button class="px-4 py-2 border-2 border-gray-300 rounded-xl text-sm font-semibold hover:bg-gray-100 hover:border-gray-400 transition-all">3</button>
-            <button class="px-4 py-2 border-2 border-gray-300 rounded-xl text-sm font-semibold hover:bg-gray-100 hover:border-gray-400 transition-all">
-                Next
-            </button>
-        </div>
+    <div class="bg-gradient-to-r from-gray-50 to-white px-6 py-5 border-t border-gray-200">
+        {{ $matakuliah->links() }}
     </div>
 </div>
 
@@ -274,7 +256,9 @@
 
         {{-- Modal Body --}}
         <div class="p-8 overflow-y-auto" style="max-height: calc(90vh - 200px);">
-            <form id="matkulForm">
+            <form id="matkulForm" method="POST" action="{{ route('akademik.matakuliah.store') }}">
+                @csrf
+                <div id="methodField"></div>
                 <div class="space-y-6">
                     <div>
                         <label class="block text-sm font-bold text-gray-800 mb-2 flex items-center gap-2">
@@ -314,11 +298,11 @@
 
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Program Studi <span class="text-red-500">*</span></label>
-                        <select name="prodi" required class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                        <select name="prodi_id" required class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
                             <option value="">Pilih Program Studi</option>
-                            <option>Rekayasa Perangkat Lunak</option>
-                            <option>Teknik Informatika</option>
-                            <option>Sistem Informasi</option>
+                            @foreach($prodis as $p)
+                                <option value="{{ $p->prodi_id }}">{{ $p->nama_prodi }}</option>
+                            @endforeach
                         </select>
                     </div>
 
@@ -374,17 +358,32 @@
 function openAddModal() {
     document.getElementById('modalTitle').textContent = 'Tambah Mata Kuliah';
     document.getElementById('matkulForm').reset();
+    document.getElementById('matkulForm').action = "{{ route('akademik.matakuliah.store') }}";
+    document.getElementById('methodField').innerHTML = '';
     document.getElementById('matkulModal').classList.remove('hidden');
     document.getElementById('matkulModal').classList.add('flex');
     document.body.style.overflow = 'hidden';
 }
 
-function openEditModal(kode) {
+function openEditModal(mk) {
     document.getElementById('modalTitle').textContent = 'Edit Mata Kuliah';
+    const form = document.getElementById('matkulForm');
+    form.reset();
+    form.action = `/akademik/matakuliah/${mk.matakuliah_id}`;
+    document.getElementById('methodField').innerHTML = '@method("PUT")';
+    
+    form.kode.value = mk.kode_mk;
+    form.nama.value = mk.nama_mk;
+    form.sks.value = mk.sks;
+    form.semester.value = mk.semester_paket;
+    form.prodi_id.value = mk.prodi_id;
+    form.jenis.value = mk.jenis;
+    form.status.value = mk.status;
+    form.deskripsi.value = mk.deskripsi;
+
     document.getElementById('matkulModal').classList.remove('hidden');
     document.getElementById('matkulModal').classList.add('flex');
     document.body.style.overflow = 'hidden';
-    // Load data here
 }
 
 function closeModal() {
@@ -394,14 +393,7 @@ function closeModal() {
 }
 
 function saveMatkul() {
-    const form = document.getElementById('matkulForm');
-    if(!form.checkValidity()) {
-        alert('Mohon lengkapi semua field yang wajib diisi (*)');
-        return;
-    }
-    
-    alert('Mata kuliah berhasil disimpan!');
-    closeModal();
+    document.getElementById('matkulForm').submit();
 }
 
 function deleteMatkul(kode) {

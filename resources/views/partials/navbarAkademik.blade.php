@@ -10,43 +10,30 @@
         </svg>
     </button>
 
-            <div data-accordion-button class="hidden">
-                <a href="{{ route('akademik.dashboardAkademik') }}"
-   class="block px-4 py-2.5 text-sm transition
-   {{ request()->routeIs('akademik.dashboardAkademik')
-        ? 'bg-[#3da76e]/20 border-l-4 border-green-400 font-semibold text-white'
-        : 'pl-5 font-medium text-green-100/70 hover:text-white' }}">
-    Beranda
-</a>
-<a href="{{ route('akademik.matakuliah.index') }}"
-   class="block px-4 py-2.5 text-sm transition
-   {{ request()->routeIs('akademik.matakuliah.index')
-        ? 'bg-[#3da76e]/20 border-l-4 border-green-400 font-semibold text-white'
-        : 'pl-5 font-medium text-green-100/70 hover:text-white' }}">
-    Kelola MataKuliah
-</a>
-<a href="{{ route('akademik.kurikulum.index') }}"
-   class="block px-4 py-2.5 text-sm transition
-   {{ request()->routeIs('akademik.kurikulum.index')
-        ? 'bg-[#3da76e]/20 border-l-4 border-green-400 font-semibold text-white'
-        : 'pl-5 font-medium text-green-100/70 hover:text-white' }}">
-    Kelola Kurikulum
-</a>
-<a href="{{ route('akademik.kelas.index') }}"
-   class="block px-4 py-2.5 text-sm transition
-   {{ request()->routeIs('akademik.kelas.index')
-        ? 'bg-[#3da76e]/20 border-l-4 border-green-400 font-semibold text-white'
-        : 'pl-5 font-medium text-green-100/70 hover:text-white' }}">
-    Kelola Kelas
-</a>
-<a href="{{ route('akademik.jadwal.index') }}"
-   class="block px-4 py-2.5 text-sm transition
-   {{ request()->routeIs('akademik.jadwal.index')
-        ? 'bg-[#3da76e]/20 border-l-4 border-green-400 font-semibold text-white'
-        : 'pl-5 font-medium text-green-100/70 hover:text-white' }}">
-    Kelola Jadwal
-</a>
-</div>
+            <div data-accordion-content class="hidden">
+                <a href="{{ route('akademik.dashboardAkademik') }}" class="block px-4 py-2.5 text-sm transition {{ request()->routeIs('akademik.dashboardAkademik') ? 'bg-[#3da76e]/20 border-l-4 border-green-400 font-semibold text-white' : 'pl-5 font-medium text-green-100/70 hover:text-white' }}">Beranda</a>
+                <a href="{{ route('akademik.prodi.index') }}" class="block px-4 py-2.5 text-sm transition {{ request()->routeIs('akademik.prodi.*') ? 'bg-[#3da76e]/20 border-l-4 border-green-400 font-semibold text-white' : 'pl-5 font-medium text-green-100/70 hover:text-white' }}">Kelola Program Studi</a>
+                <a href="{{ route('akademik.ruangan.index') }}" class="block px-4 py-2.5 text-sm transition {{ request()->routeIs('akademik.ruangan.*') ? 'bg-[#3da76e]/20 border-l-4 border-green-400 font-semibold text-white' : 'pl-5 font-medium text-green-100/70 hover:text-white' }}">Kelola Ruangan</a>
+                <a href="{{ route('akademik.matakuliah.index') }}" class="block px-4 py-2.5 text-sm transition {{ request()->routeIs('akademik.matakuliah.index') ? 'bg-[#3da76e]/20 border-l-4 border-green-400 font-semibold text-white' : 'pl-5 font-medium text-green-100/70 hover:text-white' }}">Kelola MataKuliah</a>
+                <a href="{{ route('akademik.kurikulum.index') }}" class="block px-4 py-2.5 text-sm transition {{ request()->routeIs('akademik.kurikulum.index') ? 'bg-[#3da76e]/20 border-l-4 border-green-400 font-semibold text-white' : 'pl-5 font-medium text-green-100/70 hover:text-white' }}">Kelola Kurikulum</a>
+                <a href="{{ route('akademik.kelas.index') }}" class="block px-4 py-2.5 text-sm transition {{ request()->routeIs('akademik.kelas.index') ? 'bg-[#3da76e]/20 border-l-4 border-green-400 font-semibold text-white' : 'pl-5 font-medium text-green-100/70 hover:text-white' }}">Kelola Kelas</a>
+                <a href="{{ route('akademik.jadwal.index') }}" class="block px-4 py-2.5 text-sm transition {{ request()->routeIs('akademik.jadwal.index') ? 'bg-[#3da76e]/20 border-l-4 border-green-400 font-semibold text-white' : 'pl-5 font-medium text-green-100/70 hover:text-white' }}">Kelola Jadwal</a>
+            </div>
+        </div>
+
+        <div class="mt-4 overflow-hidden rounded-lg bg-[#245d43]/50">
+            <button data-accordion-button class="flex w-full items-center justify-between bg-[#2d6a4f] px-4 py-3 text-sm font-bold text-white hover:bg-[#367c5d]">
+                <span>REFERENSI & PROFIL</span>
+                <svg class="h-4 w-4 transition-transform" viewBox="0 0 24 24">
+                    <path d="M19 9l-7 7-7-7" fill="none" stroke="currentColor" stroke-width="2"/>
+                </svg>
+            </button>
+            <div data-accordion-content class="hidden">
+                <a href="{{ route('akademik.dosen.list') }}" class="block px-4 py-2.5 text-sm transition {{ request()->routeIs('akademik.dosen.list') ? 'bg-[#3da76e]/20 border-l-4 border-green-400 font-semibold text-white' : 'pl-5 font-medium text-green-100/70 hover:text-white' }}">Daftar Dosen</a>
+                <a href="{{ route('akademik.mahasiswa.list') }}" class="block px-4 py-2.5 text-sm transition {{ request()->routeIs('akademik.mahasiswa.list') ? 'bg-[#3da76e]/20 border-l-4 border-green-400 font-semibold text-white' : 'pl-5 font-medium text-green-100/70 hover:text-white' }}">Daftar Mahasiswa</a>
+                <a href="{{ route('akademik.profile') }}" class="block px-4 py-2.5 text-sm transition {{ request()->routeIs('akademik.profile') ? 'bg-[#3da76e]/20 border-l-4 border-green-400 font-semibold text-white' : 'pl-5 font-medium text-green-100/70 hover:text-white' }}">Profil Saya</a>
+            </div>
+        </div>
 </div>
 
             

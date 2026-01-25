@@ -11,11 +11,16 @@ class Jadwal extends Model
 
     protected $table = 'jadwal';
     protected $primaryKey = 'jadwal_id';
-    protected $fillable = ['kelas_id', 'hari', 'jam_mulai', 'jam_selesai', 'ruangan'];
+    protected $fillable = ['kelas_id', 'ruangan_id', 'hari', 'jam_mulai', 'jam_selesai'];
 
     public function kelas()
     {
         return $this->belongsTo(Kelas::class, 'kelas_id');
+    }
+
+    public function ruangan()
+    {
+        return $this->belongsTo(Ruangan::class, 'ruangan_id');
     }
 
     public function pertemuans()

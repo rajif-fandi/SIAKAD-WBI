@@ -2,6 +2,8 @@
 
 @section('content')
 
+@include('partials.credential_alert')
+
 {{-- Success Message --}}
 <div id="success-message" class="mb-6 flex items-center gap-3 bg-gradient-to-r from-emerald-50 to-green-50 border-l-4 border-emerald-500 p-4 rounded-xl shadow-lg animate-fade-in hidden backdrop-blur-sm">
     <div class="w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
@@ -55,7 +57,7 @@
                 </svg>
             </div>
             <p class="text-sm text-gray-600 font-semibold mb-2">Total Dosen</p>
-            <p class="text-4xl font-extrabold text-gray-900 mb-1">87</p>
+            <p class="text-4xl font-extrabold text-gray-900 mb-1">{{ $stats['total'] }}</p>
             <div class="flex items-center gap-2">
                 <span class="text-xs px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full font-semibold">+5 bulan ini</span>
             </div>
@@ -71,7 +73,7 @@
                 </svg>
             </div>
             <p class="text-sm text-gray-600 font-semibold mb-2">Dosen Aktif</p>
-            <p class="text-4xl font-extrabold text-gray-900 mb-1">82</p>
+            <p class="text-4xl font-extrabold text-gray-900 mb-1">{{ $stats['aktif'] }}</p>
             <div class="flex items-center gap-2">
                 <span class="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full font-semibold">94.3% aktif</span>
             </div>
@@ -87,7 +89,7 @@
                 </svg>
             </div>
             <p class="text-sm text-gray-600 font-semibold mb-2">Dosen Tetap</p>
-            <p class="text-4xl font-extrabold text-gray-900 mb-1">65</p>
+            <p class="text-4xl font-extrabold text-gray-900 mb-1">{{ $stats['tetap'] }}</p>
             <div class="flex items-center gap-2">
                 <span class="text-xs px-2 py-1 bg-amber-100 text-amber-700 rounded-full font-semibold">74.7% tetap</span>
             </div>
@@ -103,7 +105,7 @@
                 </svg>
             </div>
             <p class="text-sm text-gray-600 font-semibold mb-2">Profesor</p>
-            <p class="text-4xl font-extrabold text-gray-900 mb-1">12</p>
+            <p class="text-4xl font-extrabold text-gray-900 mb-1">{{ $stats['profesor'] }}</p>
             <div class="flex items-center gap-2">
                 <span class="text-xs px-2 py-1 bg-purple-100 text-purple-700 rounded-full font-semibold">Tertinggi</span>
             </div>
@@ -170,44 +172,33 @@
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
-                @php
-                    $dosen = [
-                        ['1234567890', 'Dr. Rizki Ramadhansyah, S.T., M.Kom', 'Rekayasa Perangkat Lunak', 'Lektor Kepala', 'Aktif'],
-                        ['0987654321', 'Prof. Dr. Ahmad Fadli, M.T.', 'Teknik Informatika', 'Profesor', 'Aktif'],
-                        ['1122334455', 'Siti Aminah, S.Kom., M.Kom', 'Sistem Informasi', 'Lektor', 'Aktif'],
-                        ['5544332211', 'Dr. Budi Santoso, S.T., M.Sc', 'Teknik Informatika', 'Lektor Kepala', 'Aktif'],
-                        ['6677889900', 'Citra Dewi, S.Kom., M.T.', 'Rekayasa Perangkat Lunak', 'Asisten Ahli', 'Aktif'],
-                        ['9988776655', 'Dian Purnama, S.Si., M.Kom', 'Sistem Informasi', 'Lektor', 'Cuti'],
-                    ];
-                @endphp
-
-                @foreach($dosen as $dsn)
+                @foreach($dosens as $dsn)
                 <tr class="hover:bg-gradient-to-r hover:from-emerald-50/50 hover:to-transparent transition-all group">
                     <td class="px-6 py-5">
                         <input type="checkbox" class="w-5 h-5 rounded-lg border-gray-300 text-[#1F653F] focus:ring-[#1F653F]">
                     </td>
                     <td class="px-6 py-5">
-                        <span class="text-sm font-bold font-mono text-gray-900 bg-gray-100 px-3 py-1.5 rounded-lg">{{ $dsn[0] }}</span>
+                        <span class="text-sm font-bold font-mono text-gray-900 bg-gray-100 px-3 py-1.5 rounded-lg">{{ $dsn->nip }}</span>
                     </td>
                     <td class="px-6 py-5">
                         <div class="flex items-center gap-4">
                             <div class="w-12 h-12 bg-gradient-to-br from-[#1F653F] to-[#2F8054] rounded-xl flex items-center justify-center flex-shrink-0 shadow-md group-hover:scale-110 transition-transform">
-                                <span class="text-white font-bold text-base">{{ substr($dsn[1], 0, 1) }}</span>
+                                <span class="text-white font-bold text-base">{{ substr($dsn->nama, 0, 1) }}</span>
                             </div>
                             <div>
-                                <p class="font-bold text-gray-900 text-base">{{ $dsn[1] }}</p>
+                                <p class="font-bold text-gray-900 text-base">{{ $dsn->nama }}</p>
                                 <p class="text-xs text-gray-500 mt-0.5 flex items-center gap-1">
                                     <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                                         <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
                                         <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
                                     </svg>
-                                    {{ strtolower(str_replace([' ', ',', '.', 'Dr.', 'Prof.'], '', explode(',', $dsn[1])[0])) }}@wbi.ac.id
+                                    {{ $dsn->user->email }}
                                 </p>
                             </div>
                         </div>
                     </td>
                     <td class="px-6 py-5">
-                        <span class="text-sm text-gray-700 font-medium">{{ $dsn[2] }}</span>
+                        <span class="text-sm text-gray-700 font-medium">{{ $dsn->prodi->nama_prodi ?? '-' }}</span>
                     </td>
                     <td class="px-6 py-5 text-center">
                         @php
@@ -217,39 +208,40 @@
                                 'Lektor' => 'from-cyan-500 to-blue-600 text-white shadow-cyan-200',
                                 'Asisten Ahli' => 'from-emerald-500 to-green-600 text-white shadow-emerald-200'
                             ];
-                            $colorClass = $jabatanColors[$dsn[3]] ?? 'from-gray-500 to-gray-600 text-white';
+                            $colorClass = $jabatanColors[$dsn->jabatan] ?? 'from-gray-500 to-gray-600 text-white';
                         @endphp
                         <span class="inline-block bg-gradient-to-r {{ $colorClass }} px-4 py-1.5 rounded-lg text-xs font-bold shadow-md">
-                            {{ $dsn[3] }}
+                            {{ $dsn->jabatan ?? 'Dosen' }}
                         </span>
                     </td>
                     <td class="px-6 py-5 text-center">
-                        @if($dsn[4] == 'Aktif')
-                            <span class="inline-flex items-center gap-1.5 bg-gradient-to-r from-emerald-500 to-green-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-md shadow-emerald-200">
-                                <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
-                                Aktif
-                            </span>
-                        @else
-                            <span class="inline-flex items-center gap-1.5 bg-gradient-to-r from-amber-500 to-orange-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-md shadow-amber-200">
-                                <span class="w-2 h-2 bg-white rounded-full"></span>
-                                Cuti
-                            </span>
-                        @endif
+                        @php
+                            $statusColors = [
+                                'Aktif' => 'from-emerald-500 to-green-600',
+                                'Cuti' => 'from-amber-500 to-orange-600',
+                                'Non-Aktif' => 'from-red-500 to-red-600',
+                            ];
+                            $statColor = $statusColors[$dsn->status_dosen] ?? 'from-gray-500 to-gray-600';
+                        @endphp
+                        <span class="inline-flex items-center gap-1.5 bg-gradient-to-r {{ $statColor }} text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-md">
+                            <span class="w-2 h-2 bg-white rounded-full {{ $dsn->status_dosen == 'Aktif' ? 'animate-pulse' : '' }}"></span>
+                            {{ $dsn->status_dosen ?? 'Aktif' }}
+                        </span>
                     </td>
                     <td class="px-6 py-5">
                         <div class="flex items-center justify-center gap-2">
-                            <button onclick="openDetailModal('{{ $dsn[0] }}')" class="p-2.5 bg-blue-50 hover:bg-gradient-to-br hover:from-blue-500 hover:to-blue-600 text-blue-600 hover:text-white rounded-xl transition-all shadow-sm hover:shadow-md group/btn" title="Detail">
+                            <button onclick="openDetailModal('{{ $dsn->dosen_id }}')" class="p-2.5 bg-blue-50 hover:bg-gradient-to-br hover:from-blue-500 hover:to-blue-600 text-blue-600 hover:text-white rounded-xl transition-all shadow-sm hover:shadow-md group/btn" title="Detail">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                                 </svg>
                             </button>
-                            <button onclick="openEditModal('{{ $dsn[0] }}')" class="p-2.5 bg-emerald-50 hover:bg-gradient-to-br hover:from-[#1F653F] hover:to-[#2F8054] text-emerald-600 hover:text-white rounded-xl transition-all shadow-sm hover:shadow-md" title="Edit">
+                            <button onclick="openEditModal({{ json_encode($dsn) }})" class="p-2.5 bg-emerald-50 hover:bg-gradient-to-br hover:from-[#1F653F] hover:to-[#2F8054] text-emerald-600 hover:text-white rounded-xl transition-all shadow-sm hover:shadow-md" title="Edit">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                 </svg>
                             </button>
-                            <button onclick="confirmDelete('{{ $dsn[0] }}', '{{ $dsn[1] }}')" class="p-2.5 bg-red-50 hover:bg-gradient-to-br hover:from-red-500 hover:to-red-600 text-red-600 hover:text-white rounded-xl transition-all shadow-sm hover:shadow-md" title="Hapus">
+                            <button onclick="confirmDelete('{{ $dsn->dosen_id }}', '{{ $dsn->nama }}')" class="p-2.5 bg-red-50 hover:bg-gradient-to-br hover:from-red-500 hover:to-red-600 text-red-600 hover:text-white rounded-xl transition-all shadow-sm hover:shadow-md" title="Hapus">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                 </svg>
@@ -319,18 +311,27 @@
                 </div>
             </div>
             
-            <form id="dosen-form" onsubmit="handleFormSubmit(event)" class="p-8 overflow-y-auto" style="max-height: calc(90vh - 250px);">
+            <form id="dosen-form" action="{{ route('admin.dosen.store') }}" method="POST" class="p-8 overflow-y-auto" style="max-height: calc(90vh - 250px);">
+                @csrf
                 
                 {{-- Tab 1: Data Pribadi --}}
                 <div id="modal-content-pribadi" class="modal-tab-content">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {{-- Password field only shown/required based on context via JS if needed, but per request it's default --}}
+                        <div id="password-wrapper" class="md:col-span-2 hidden">
+                            <label class="block text-sm font-bold text-gray-800 mb-2 flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 bg-[#1F653F] rounded-full"></span>
+                                Password Baru <span class="text-xs font-normal text-gray-500">(Opsional)</span>
+                            </label>
+                            <input type="password" name="password" class="w-full border-2 border-gray-300 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1F653F] focus:border-[#1F653F] transition-all">
+                            <p id="password-hint" class="text-xs text-blue-600 mt-1.5 font-medium italic">Biarkan kosong untuk menggunakan password default/lama.</p>
+                        </div>
                         <div>
                             <label class="block text-sm font-bold text-gray-800 mb-2 flex items-center gap-2">
                                 <span class="w-1.5 h-1.5 bg-[#1F653F] rounded-full"></span>
                                 NIDN <span class="text-red-500">*</span>
                             </label>
                             <input type="text" name="nidn" required maxlength="10" class="w-full border-2 border-gray-300 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1F653F] focus:border-[#1F653F] transition-all">
-                            <p class="text-xs text-gray-500 mt-1.5">10 digit nomor identitas dosen</p>
                         </div>
 
                         <div>
@@ -398,10 +399,10 @@
                         <div>
                             <label class="block text-sm font-bold text-gray-800 mb-2 flex items-center gap-2">
                                 <span class="w-1.5 h-1.5 bg-[#1F653F] rounded-full"></span>
-                                Email Institusi <span class="text-red-500">*</span>
+                                Akun Login (Automated)
                             </label>
-                            <input type="email" name="email" required class="w-full border-2 border-gray-300 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1F653F] focus:border-[#1F653F] transition-all">
-                            <p class="text-xs text-gray-500 mt-1.5">Contoh: nama@wbi.ac.id</p>
+                            <input type="text" id="email_preview" readonly class="w-full border-2 border-gray-300 rounded-xl px-4 py-3.5 text-sm focus:outline-none bg-gray-50 text-gray-500 transition-all font-mono" placeholder="nama.lengkap@wbi.ac.id">
+                            <p class="text-xs text-gray-500 mt-1.5">Email login otomatis: namadepan.namabelakang@wbi.ac.id</p>
                         </div>
 
                         <div class="md:col-span-2">
@@ -422,11 +423,11 @@
                                 <span class="w-1.5 h-1.5 bg-[#1F653F] rounded-full"></span>
                                 Program Studi <span class="text-red-500">*</span>
                             </label>
-                            <select name="prodi" required class="w-full border-2 border-gray-300 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1F653F] focus:border-[#1F653F] bg-white transition-all">
+                            <select name="prodi_id" required class="w-full border-2 border-gray-300 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1F653F] focus:border-[#1F653F] bg-white transition-all">
                                 <option value="">Pilih Program Studi</option>
-                                <option>Rekayasa Perangkat Lunak</option>
-                                <option>Teknik Informatika</option>
-                                <option>Sistem Informasi</option>
+                                @foreach($prodis as $prodi)
+                                    <option value="{{ $prodi->prodi_id }}">{{ $prodi->nama_prodi }}</option>
+                                @endforeach
                             </select>
                         </div>
 
@@ -642,91 +643,162 @@
 <script>
 let deleteNidn = null;
 
+function showModalTab(tabName) {
+    // 1. Hide all tab contents
+    document.querySelectorAll('.modal-tab-content').forEach(el => {
+        el.classList.add('hidden');
+    });
+
+    // 2. Show selected tab content
+    document.getElementById(`modal-content-${tabName}`).classList.remove('hidden');
+
+    // 3. Reset all tab buttons to inactive state
+    const tabs = ['pribadi', 'akademik', 'kepegawaian', 'pendidikan'];
+    tabs.forEach(t => {
+        const btn = document.getElementById(`modal-tab-${t}`);
+        if(btn) {
+            btn.className = 'flex-1 px-6 py-4 text-sm font-bold text-gray-600 hover:bg-gray-50 transition-all cursor-pointer';
+            // Remove any specific active children/spans if needed, but simple class swap is easier
+            // Re-adding the span structure might be needed if the active one has special markup
+        }
+    });
+
+    // 4. Set active tab button style
+    const activeBtn = document.getElementById(`modal-tab-${tabName}`);
+    if(activeBtn) {
+        activeBtn.className = 'flex-1 px-6 py-4 text-sm font-bold text-white bg-gradient-to-r from-[#1F653F] to-[#2F8054] transition-all relative shadow-md';
+    }
+}
+
 function openAddModal() {
     document.getElementById('modal-title').textContent = 'Tambah Dosen Baru';
-    document.getElementById('dosen-form').reset();
+    const form = document.getElementById('dosen-form');
+    form.reset();
+    form.action = "{{ route('admin.dosen.store') }}";
+    form.method = "POST";
+    // Remove if any hidden method input exists
+    const methodInput = form.querySelector('input[name="_method"]');
+    if (methodInput) methodInput.remove();
+    
+    // Hide password field on creation since it uses default
+    document.getElementById('password-wrapper').classList.add('hidden');
+    document.getElementById('email_preview').value = '';
+
     document.getElementById('form-modal').classList.remove('hidden');
     document.body.style.overflow = 'hidden';
     showModalTab('pribadi');
 }
 
-function openEditModal(nidn) {
+function openEditModal(dosen) {
     document.getElementById('modal-title').textContent = 'Edit Data Dosen';
+    const form = document.getElementById('dosen-form');
+    form.reset();
+    form.action = `/admin/dosen/${dosen.dosen_id}`;
+    
+    // Add hidden method input for PUT
+    let methodInput = form.querySelector('input[name="_method"]');
+    if (!methodInput) {
+        methodInput = document.createElement('input');
+        methodInput.type = 'hidden';
+        methodInput.name = '_method';
+        methodInput.value = 'PUT';
+        form.appendChild(methodInput);
+    } else {
+        methodInput.value = 'PUT';
+    }
+
+    // Fill form fields
+    form.querySelector('[name="nidn"]').value = dosen.nip;
+    form.querySelector('[name="nama"]').value = dosen.nama;
+    form.querySelector('[name="prodi_id"]').value = dosen.prodi_id;
+    form.querySelector('[name="jabatan"]').value = dosen.jabatan || '';
+    form.querySelector('[name="tanggal_lahir"]').value = dosen.tanggal_lahir || '';
+    form.querySelector('[name="no_telp"]').value = dosen.no_hp || '';
+    form.querySelector('[name="alamat"]').value = dosen.alamat_detail || '';
+    
+    // Extra fields
+    if(form.querySelector('[name="nik"]')) form.querySelector('[name="nik"]').value = dosen.nik || '';
+    if(form.querySelector('[name="jenis_kelamin"]')) form.querySelector('[name="jenis_kelamin"]').value = dosen.jenis_kelamin || '';
+    if(form.querySelector('[name="tempat_lahir"]')) form.querySelector('[name="tempat_lahir"]').value = dosen.tempat_lahir || '';
+    if(form.querySelector('[name="bidang_keahlian"]')) form.querySelector('[name="bidang_keahlian"]').value = dosen.bidang_keahlian || '';
+    if(form.querySelector('[name="sinta_id"]')) form.querySelector('[name="sinta_id"]').value = dosen.sinta_id || '';
+    if(form.querySelector('[name="status_kepegawaian"]')) form.querySelector('[name="status_kepegawaian"]').value = dosen.status_kepegawaian || '';
+    if(form.querySelector('[name="status_dosen"]')) form.querySelector('[name="status_dosen"]').value = dosen.status_dosen || '';
+    if(form.querySelector('[name="tanggal_mulai"]')) form.querySelector('[name="tanggal_mulai"]').value = dosen.tanggal_mulai || '';
+    if(form.querySelector('[name="no_sertifikat"]')) form.querySelector('[name="no_sertifikat"]').value = dosen.no_sertifikat || '';
+    
+    // Education
+    if(form.querySelector('[name="s1_univ"]')) form.querySelector('[name="s1_univ"]').value = dosen.s1_univ || '';
+    if(form.querySelector('[name="s1_prodi"]')) form.querySelector('[name="s1_prodi"]').value = dosen.s1_prodi || '';
+    if(form.querySelector('[name="s1_tahun"]')) form.querySelector('[name="s1_tahun"]').value = dosen.s1_tahun || '';
+    if(form.querySelector('[name="s1_gelar"]')) form.querySelector('[name="s1_gelar"]').value = dosen.s1_gelar || '';
+    
+    if(form.querySelector('[name="s2_univ"]')) form.querySelector('[name="s2_univ"]').value = dosen.s2_univ || '';
+    if(form.querySelector('[name="s2_prodi"]')) form.querySelector('[name="s2_prodi"]').value = dosen.s2_prodi || '';
+    if(form.querySelector('[name="s2_tahun"]')) form.querySelector('[name="s2_tahun"]').value = dosen.s2_tahun || '';
+    if(form.querySelector('[name="s2_gelar"]')) form.querySelector('[name="s2_gelar"]').value = dosen.s2_gelar || '';
+    
+    if(form.querySelector('[name="s3_univ"]')) form.querySelector('[name="s3_univ"]').value = dosen.s3_univ || '';
+    if(form.querySelector('[name="s3_prodi"]')) form.querySelector('[name="s3_prodi"]').value = dosen.s3_prodi || '';
+    if(form.querySelector('[name="s3_tahun"]')) form.querySelector('[name="s3_tahun"]').value = dosen.s3_tahun || '';
+    if(form.querySelector('[name="s3_gelar"]')) form.querySelector('[name="s3_gelar"]').value = dosen.s3_gelar || '';
+    
+    // Show password field on edit
+    document.getElementById('password-wrapper').classList.remove('hidden');
+    
+    // Set email preview
+    const emailPreview = document.getElementById('email_preview');
+    if (emailPreview) emailPreview.value = dosen.user?.email || '';
+    document.getElementById('email_preview_hint').textContent = 'Email yang terdaftar untuk dosen ini.';
+
+
+    // Update hints
+    document.getElementById('password-hint').textContent = 'Biarkan kosong jika tidak ingin mengubah password';
+    form.querySelector('[name="password"]').required = false;
+
     document.getElementById('form-modal').classList.remove('hidden');
     document.body.style.overflow = 'hidden';
     showModalTab('pribadi');
-}
-
-function openDetailModal(nidn) {
-    alert('Detail dosen NIDN: ' + nidn);
 }
 
 function closeFormModal() {
     document.getElementById('form-modal').classList.add('hidden');
     document.body.style.overflow = 'auto';
+    // Re-enable fields if they were disabled
+    const form = document.getElementById('dosen-form');
+    form.querySelector('[name="password"]').required = true;
 }
 
-function showModalTab(tabName) {
-    document.querySelectorAll('.modal-tab-content').forEach(content => {
-        content.classList.add('hidden');
-    });
-
-    document.querySelectorAll('[id^="modal-tab-"]').forEach(tab => {
-        tab.classList.remove('bg-indigo-600', 'text-white');
-        tab.classList.add('text-gray-600', 'hover:bg-gray-50');
-    });
-
-    document.getElementById('modal-content-' + tabName).classList.remove('hidden');
-
-    const activeTab = document.getElementById('modal-tab-' + tabName);
-    activeTab.classList.remove('text-gray-600', 'hover:bg-gray-50');
-    activeTab.classList.add('bg-indigo-600', 'text-white');
-}
-
-function confirmDelete(nidn, nama) {
-    deleteNidn = nidn;
+function confirmDelete(id, nama) {
+    deleteId = id;
     document.getElementById('delete-name').textContent = nama;
     document.getElementById('delete-modal').classList.remove('hidden');
     document.body.style.overflow = 'hidden';
 }
 
-function closeDeleteModal() {
-    document.getElementById('delete-modal').classList.add('hidden');
-    document.body.style.overflow = 'auto';
-}
-
 function deleteData() {
-    console.log('Deleting NIDN:', deleteNidn);
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `/admin/dosen/${deleteId}`;
     
-    closeDeleteModal();
+    const csrf = document.createElement('input');
+    csrf.type = 'hidden';
+    csrf.name = '_token';
+    csrf.value = "{{ csrf_token() }}";
     
-    const successMsg = document.getElementById('success-message');
-    successMsg.querySelector('span').textContent = 'Data dosen berhasil dihapus!';
-    successMsg.classList.remove('hidden');
+    const method = document.createElement('input');
+    method.type = 'hidden';
+    method.name = '_method';
+    method.value = 'DELETE';
     
-    setTimeout(() => {
-        successMsg.classList.add('hidden');
-    }, 3000);
-    
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    form.appendChild(csrf);
+    form.appendChild(method);
+    document.body.appendChild(form);
+    form.submit();
 }
 
 function handleFormSubmit(event) {
-    event.preventDefault();
-    
-    const formData = new FormData(event.target);
-    console.log('Form data:', Object.fromEntries(formData));
-    
-    closeFormModal();
-    
-    const successMsg = document.getElementById('success-message');
-    successMsg.classList.remove('hidden');
-    
-    setTimeout(() => {
-        successMsg.classList.add('hidden');
-    }, 3000);
-    
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Let the standard form submission handle it for now to use controller redirect
 }
 </script>
 <style>

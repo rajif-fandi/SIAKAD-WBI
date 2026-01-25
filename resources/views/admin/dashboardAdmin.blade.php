@@ -25,7 +25,7 @@
 {{-- Quick Stats --}}
 <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-6">
     {{-- Total Mahasiswa --}}
-    <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-2xl shadow-lg relative overflow-hidden group hover:scale-105 transition-transform cursor-pointer">
+    <a href="{{ route('admin.mahasiswa.mahasiswa') }}" class="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-2xl shadow-lg relative overflow-hidden group hover:scale-105 transition-transform cursor-pointer">
         <div class="relative z-10">
             <div class="flex items-center justify-between mb-3">
                 <div class="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -35,14 +35,14 @@
                 </div>
             </div>
             <p class="text-sm opacity-90 mb-1">Total Mahasiswa</p>
-            <p class="text-4xl font-bold">1,247</p>
-            <p class="text-xs opacity-75 mt-1">Mahasiswa Aktif</p>
+            <p class="text-4xl font-bold">{{ number_format($stats['total_mahasiswa']) }}</p>
+            <p class="text-xs opacity-75 mt-1">Mahasiswa Terdaftar</p>
         </div>
         <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-white opacity-10 rounded-full"></div>
-    </div>
+    </a>
 
     {{-- Total Dosen --}}
-    <div class="bg-gradient-to-br from-green-500 to-green-600 text-white p-6 rounded-2xl shadow-lg relative overflow-hidden group hover:scale-105 transition-transform cursor-pointer">
+    <a href="{{ route('admin.dosen.index') }}" class="bg-gradient-to-br from-green-500 to-green-600 text-white p-6 rounded-2xl shadow-lg relative overflow-hidden group hover:scale-105 transition-transform cursor-pointer">
         <div class="relative z-10">
             <div class="flex items-center justify-between mb-3">
                 <div class="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -52,13 +52,13 @@
                 </div>
             </div>
             <p class="text-sm opacity-90 mb-1">Total Dosen</p>
-            <p class="text-4xl font-bold">87</p>
-            <p class="text-xs opacity-75 mt-1">Dosen Aktif</p>
+            <p class="text-4xl font-bold">{{ number_format($stats['total_dosen']) }}</p>
+            <p class="text-xs opacity-75 mt-1">Dosen Terdaftar</p>
         </div>
         <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-white opacity-10 rounded-full"></div>
-    </div>
+    </a>
 
-    {{-- Total Mata Kuliah --}}
+    {{-- Total Program Studi --}}
     <div class="bg-gradient-to-br from-orange-500 to-orange-600 text-white p-6 rounded-2xl shadow-lg relative overflow-hidden group hover:scale-105 transition-transform cursor-pointer">
         <div class="relative z-10">
             <div class="flex items-center justify-between mb-3">
@@ -68,15 +68,15 @@
                     </svg>
                 </div>
             </div>
-            <p class="text-sm opacity-90 mb-1">Mata Kuliah</p>
-            <p class="text-4xl font-bold">156</p>
-            <p class="text-xs opacity-75 mt-1">Total Mata Kuliah</p>
+            <p class="text-sm opacity-90 mb-1">Program Studi</p>
+            <p class="text-4xl font-bold">{{ number_format($stats['total_prodi']) }}</p>
+            <p class="text-xs opacity-75 mt-1">Total Prodi</p>
         </div>
         <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-white opacity-10 rounded-full"></div>
     </div>
 
-    {{-- Akun Pending --}}
-    <div class="bg-gradient-to-br from-red-500 to-red-600 text-white p-6 rounded-2xl shadow-lg relative overflow-hidden group hover:scale-105 transition-transform cursor-pointer">
+    {{-- Total Kelas --}}
+    <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-6 rounded-2xl shadow-lg relative overflow-hidden group hover:scale-105 transition-transform cursor-pointer">
         <div class="relative z-10">
             <div class="flex items-center justify-between mb-3">
                 <div class="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -85,9 +85,9 @@
                     </svg>
                 </div>
             </div>
-            <p class="text-sm opacity-90 mb-1">Akun Pending</p>
-            <p class="text-4xl font-bold">24</p>
-            <p class="text-xs opacity-75 mt-1">Perlu Aktivasi</p>
+            <p class="text-sm opacity-90 mb-1">Total Kelas</p>
+            <p class="text-4xl font-bold">{{ number_format($stats['total_kelas']) }}</p>
+            <p class="text-xs opacity-75 mt-1">Kelas Aktif</p>
         </div>
         <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-white opacity-10 rounded-full"></div>
     </div>
@@ -96,7 +96,7 @@
 {{-- Quick Actions Grid --}}
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
     {{-- Kelola Mahasiswa --}}
-    <a href="#" class="bg-white rounded-2xl shadow-sm border-2 border-blue-200 hover:border-blue-400 p-6 hover:shadow-xl transition group">
+    <a href="{{ route('admin.mahasiswa.mahasiswa') }}" class="bg-white rounded-2xl shadow-sm border-2 border-blue-200 hover:border-blue-400 p-6 hover:shadow-xl transition group">
         <div class="flex items-center gap-4 mb-4">
             <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
                 <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -109,7 +109,7 @@
             </div>
         </div>
         <div class="flex items-center justify-between text-sm">
-            <span class="text-gray-600">1,247 mahasiswa terdaftar</span>
+            <span class="text-gray-600">{{ number_format($stats['total_mahasiswa']) }} mahasiswa terdaftar</span>
             <svg class="w-5 h-5 text-blue-600 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
             </svg>
@@ -117,7 +117,7 @@
     </a>
 
     {{-- Kelola Dosen --}}
-    <a href="#" class="bg-white rounded-2xl shadow-sm border-2 border-green-200 hover:border-green-400 p-6 hover:shadow-xl transition group">
+    <a href="{{ route('admin.dosen.index') }}" class="bg-white rounded-2xl shadow-sm border-2 border-green-200 hover:border-green-400 p-6 hover:shadow-xl transition group">
         <div class="flex items-center gap-4 mb-4">
             <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
                 <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -130,7 +130,7 @@
             </div>
         </div>
         <div class="flex items-center justify-between text-sm">
-            <span class="text-gray-600">87 dosen terdaftar</span>
+            <span class="text-gray-600">{{ number_format($stats['total_dosen']) }} dosen terdaftar</span>
             <svg class="w-5 h-5 text-green-600 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
             </svg>
@@ -138,7 +138,7 @@
     </a>
 
     {{-- Kelola Mata Kuliah --}}
-    <a href="#" class="bg-white rounded-2xl shadow-sm border-2 border-orange-200 hover:border-orange-400 p-6 hover:shadow-xl transition group">
+    <a href="{{ route('akademik.matakuliah.index') }}" class="bg-white rounded-2xl shadow-sm border-2 border-orange-200 hover:border-orange-400 p-6 hover:shadow-xl transition group">
         <div class="flex items-center gap-4 mb-4">
             <div class="w-14 h-14 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
                 <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -151,7 +151,7 @@
             </div>
         </div>
         <div class="flex items-center justify-between text-sm">
-            <span class="text-gray-600">156 mata kuliah</span>
+            <span class="text-gray-600">{{ number_format($stats['kelas_dibuka']) }} kelas aktif</span>
             <svg class="w-5 h-5 text-orange-600 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
             </svg>
@@ -166,44 +166,36 @@
         <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b border-gray-200">
             <div class="flex items-center justify-between">
                 <div>
-                    <h3 class="text-lg font-bold text-gray-800">Pendaftaran Terbaru</h3>
-                    <p class="text-sm text-gray-500">Mahasiswa baru</p>
+                    <h3 class="text-lg font-bold text-gray-800">Pending Aktivasi</h3>
+                    <p class="text-sm text-gray-500">Mahasiswa belum punya akun</p>
                 </div>
-                <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-semibold">24 Pending</span>
+                <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-semibold">{{ $pendingRegistrations->count() }} Pending</span>
             </div>
         </div>
         <div class="p-6">
-            @php
-                $registrations = [
-                    ['name' => 'Ahmad Fauzi', 'nim' => '2305010089', 'prodi' => 'RPL', 'time' => '2 jam lalu', 'status' => 'pending'],
-                    ['name' => 'Siti Nurhaliza', 'nim' => '2305010090', 'prodi' => 'TI', 'time' => '3 jam lalu', 'status' => 'pending'],
-                    ['name' => 'Budi Santoso', 'nim' => '2305010091', 'prodi' => 'SI', 'time' => '5 jam lalu', 'status' => 'approved'],
-                ];
-            @endphp
-
             <div class="space-y-3">
-                @foreach($registrations as $reg)
+                @forelse($pendingRegistrations as $reg)
                 <div class="flex items-center gap-4 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
                     <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
-                        <span class="text-purple-600 font-bold text-sm">{{ substr($reg['name'], 0, 1) }}</span>
+                        <span class="text-purple-600 font-bold text-sm">{{ strtoupper(substr($reg->nama, 0, 1)) }}</span>
                     </div>
                     <div class="flex-1">
-                        <p class="font-semibold text-gray-800 text-sm">{{ $reg['name'] }}</p>
-                        <p class="text-xs text-gray-500">{{ $reg['nim'] }} • {{ $reg['prodi'] }} • {{ $reg['time'] }}</p>
+                        <p class="font-semibold text-gray-800 text-sm">{{ $reg->nama }}</p>
+                        <p class="text-xs text-gray-500">{{ $reg->npm }} • {{ $reg->prodi->nama_prodi ?? '-' }} • {{ $reg->created_at->diffForHumans() }}</p>
                     </div>
-                    @if($reg['status'] == 'pending')
-                        <button class="px-3 py-1 bg-purple-500 hover:bg-purple-600 text-white rounded-lg text-xs font-semibold transition">
-                            Aktivasi
-                        </button>
-                    @else
-                        <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">Aktif</span>
-                    @endif
+                    <a href="{{ route('admin.mahasiswa.aktivasiAkun') }}" class="px-3 py-1 bg-purple-500 hover:bg-purple-600 text-white rounded-lg text-xs font-semibold transition">
+                        Aktivasi
+                    </a>
                 </div>
-                @endforeach
+                @empty
+                <div class="text-center py-4 text-gray-500 text-sm">
+                    Tidak ada mahasiswa pending.
+                </div>
+                @endforelse
             </div>
-            <button class="w-full mt-4 py-2 text-purple-600 hover:text-purple-700 font-semibold text-sm">
-                Lihat Semua Pendaftaran →
-            </button>
+            <a href="{{ route('admin.mahasiswa.aktivasiAkun') }}" class="block w-full text-center mt-4 py-2 text-purple-600 hover:text-purple-700 font-semibold text-sm">
+                Lihat Semua Pending →
+            </a>
         </div>
     </div>
 
@@ -224,10 +216,9 @@
                         </div>
                         <div>
                             <p class="text-sm text-gray-600">Mahasiswa Aktif</p>
-                            <p class="text-2xl font-bold text-gray-800">1,247</p>
+                            <p class="text-2xl font-bold text-gray-800">{{ number_format($stats['mahasiswa_aktif']) }}</p>
                         </div>
                     </div>
-                    <span class="text-green-600 text-sm font-semibold">+12%</span>
                 </div>
 
                 <div class="flex items-center justify-between p-4 bg-green-50 border border-green-200 rounded-xl">
@@ -240,10 +231,9 @@
                         </div>
                         <div>
                             <p class="text-sm text-gray-600">Kelas Dibuka</p>
-                            <p class="text-2xl font-bold text-gray-800">342</p>
+                            <p class="text-2xl font-bold text-gray-800">{{ number_format($stats['kelas_dibuka']) }}</p>
                         </div>
                     </div>
-                    <span class="text-green-600 text-sm font-semibold">+8%</span>
                 </div>
 
                 <div class="flex items-center justify-between p-4 bg-orange-50 border border-orange-200 rounded-xl">
@@ -255,10 +245,9 @@
                         </div>
                         <div>
                             <p class="text-sm text-gray-600">KRS Disetujui</p>
-                            <p class="text-2xl font-bold text-gray-800">1,108</p>
+                            <p class="text-2xl font-bold text-gray-800">{{ number_format($stats['krs_disetujui']) }}</p>
                         </div>
                     </div>
-                    <span class="text-orange-600 text-sm font-semibold">88.8%</span>
                 </div>
             </div>
         </div>
@@ -267,7 +256,7 @@
 
 {{-- Quick Links --}}
 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-    <a href="#" class="bg-white border-2 border-gray-200 hover:border-purple-400 rounded-xl p-4 hover:shadow-lg transition group">
+    <a href="{{ route('admin.mahasiswa.aktivasiAkun') }}" class="bg-white border-2 border-gray-200 hover:border-purple-400 rounded-xl p-4 hover:shadow-lg transition group">
         <div class="text-center">
             <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
                 <svg class="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
@@ -275,11 +264,11 @@
                 </svg>
             </div>
             <p class="font-semibold text-gray-800 text-sm">Aktivasi Akun</p>
-            <p class="text-xs text-gray-500 mt-1">24 pending</p>
+            <p class="text-xs text-gray-500 mt-1">{{ $stats['pending_accounts'] }} pending</p>
         </div>
     </a>
 
-    <a href="#" class="bg-white border-2 border-gray-200 hover:border-purple-400 rounded-xl p-4 hover:shadow-lg transition group">
+    <a href="{{ route('akademik.prodi.index') }}" class="bg-white border-2 border-gray-200 hover:border-purple-400 rounded-xl p-4 hover:shadow-lg transition group">
         <div class="text-center">
             <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
                 <svg class="w-6 h-6 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
@@ -340,33 +329,25 @@
         @endphp
 
         <div class="space-y-3">
-            @foreach($activities as $activity)
+            @forelse($recentActivities as $activity)
             <div class="flex items-start gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
-                <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1
-                    @if($activity['type'] == 'success') bg-green-100
-                    @elseif($activity['type'] == 'info') bg-blue-100
-                    @elseif($activity['type'] == 'warning') bg-yellow-100
-                    @else bg-red-100
-                    @endif">
-                    <span class="text-xs font-bold
-                        @if($activity['type'] == 'success') text-green-600
-                        @elseif($activity['type'] == 'info') text-blue-600
-                        @elseif($activity['type'] == 'warning') text-yellow-600
-                        @else text-red-600
-                        @endif">
-                        {{ substr($activity['user'], 0, 1) }}
-                    </span>
+                <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1 bg-blue-100 text-blue-600">
+                    <span class="text-xs font-bold">{{ substr($activity->user->name ?? 'S', 0, 1) }}</span>
                 </div>
                 <div class="flex-1">
                     <p class="text-sm text-gray-800">
-                        <span class="font-semibold">{{ $activity['user'] }}</span>
-                        {{ $activity['action'] }}
-                        <span class="font-semibold text-purple-600">{{ $activity['target'] }}</span>
+                        <span class="font-semibold">{{ $activity->user->name ?? 'System' }}</span>
+                        {{ $activity->action }}
+                        <span class="font-semibold text-purple-600">{{ $activity->description }}</span>
                     </p>
-                    <p class="text-xs text-gray-500 mt-1">{{ $activity['time'] }}</p>
+                    <p class="text-xs text-gray-500 mt-1">{{ $activity->created_at->diffForHumans() }}</p>
                 </div>
             </div>
-            @endforeach
+            @empty
+            <div class="text-center py-4 text-gray-500 text-sm">
+                Belum ada aktivitas tercatat.
+            </div>
+            @endforelse
         </div>
     </div>
 </div>

@@ -30,8 +30,15 @@ class Mahasiswa extends Model
         'nama_ibu',
         'alamat_detail',
         'ukt_nominal',
-        'status_beasiswa'
+        'status_beasiswa',
+        'status',
+        'dosen_wali_id'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 
     public function prodi()
     {
