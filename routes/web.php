@@ -78,60 +78,93 @@ Route::middleware(['auth', 'role:dosen'])->group(function () {
     Route::get('/dosen/penilaian/kelas/{id}', [App\Http\Controllers\Dosen\PenilaianController::class, 'kelas'])->name('dosen.penilaian.kelas');
     Route::post('/dosen/penilaian/kelas/{id}/weights', [App\Http\Controllers\Dosen\PenilaianController::class, 'updateWeights'])->name('dosen.penilaian.weights.update');
     Route::post('/dosen/penilaian/simpan', [App\Http\Controllers\Dosen\PenilaianController::class, 'store'])->name('dosen.penilaian.store');
-    Route::get('/dosen/profilDosen', function () { return view('dosen.profilDosen'); })->name('dosen.profilDosen');
+    Route::get('/dosen/profilDosen', [App\Http\Controllers\Dosen\ProfileController::class, 'index'])->name('dosen.profilDosen');
+    Route::post('/dosen/profilDosen', [App\Http\Controllers\Dosen\ProfileController::class, 'update'])->name('dosen.profilDosen.update');
+    Route::post('/dosen/profilDosen/password', [App\Http\Controllers\Dosen\ProfileController::class, 'changePassword'])->name('dosen.profilDosen.password');
 });
 
 
 // Admin Routes
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin/dashboardAdmin', function () {
-        return view('admin.dashboardAdmin');
-    })->name('admin.dashboardAdmin');
+    Route::get('/admin/dashboardAdmin', [App\Http\Controllers\Admin\AdminController::class, 'dashboard'])->name('admin.dashboardAdmin');
 
     // Kelola Mahasiswa
-    Route::get('/admin/mahasiswa', function () {
-        return view('admin.mahasiswa.mahasiswa');
-    })->name('admin.mahasiswa.mahasiswa');
+    Route::get('/admin/mahasiswa', [App\Http\Controllers\Admin\AdminController::class, 'indexMahasiswa'])->name('admin.mahasiswa.mahasiswa');
+    Route::get('/admin/mahasiswa/form', [App\Http\Controllers\Admin\AdminController::class, 'createMahasiswa'])->name('admin.mahasiswa.form');
+    Route::post('/admin/mahasiswa/store', [App\Http\Controllers\Admin\AdminController::class, 'storeMahasiswa'])->name('admin.mahasiswa.store');
+    Route::get('/admin/mahasiswa/{id}/edit', [App\Http\Controllers\Admin\AdminController::class, 'editMahasiswa'])->name('admin.mahasiswa.edit');
+    Route::put('/admin/mahasiswa/{id}/update', [App\Http\Controllers\Admin\AdminController::class, 'updateMahasiswa'])->name('admin.mahasiswa.update');
+    Route::delete('/admin/mahasiswa/{id}/delete', [App\Http\Controllers\Admin\AdminController::class, 'destroyMahasiswa'])->name('admin.mahasiswa.delete');
+    Route::get('/admin/mahasiswa/aktivasiAkun', [App\Http\Controllers\Admin\AdminController::class, 'indexAktivasiAkun'])->name('admin.mahasiswa.aktivasiAkun');
+    Route::post('/admin/mahasiswa/generate', [App\Http\Controllers\Admin\AdminController::class, 'generateAkun'])->name('admin.mahasiswa.generate');
 
-     // Form Tambah Mahasiswa
-    Route::get('/admin/mahasiswa/form', function () {
-        return view('admin.mahasiswa.form');
-    })->name('admin.mahasiswa.form');
+    // Kelola Dosen
+    Route::get('/admin/dosen', [App\Http\Controllers\Admin\AdminController::class, 'indexDosen'])->name('admin.dosen.index');
+    Route::post('/admin/dosen/store', [App\Http\Controllers\Admin\AdminController::class, 'storeDosen'])->name('admin.dosen.store');
+    Route::put('/admin/dosen/{id}', [App\Http\Controllers\Admin\AdminController::class, 'updateDosen'])->name('admin.dosen.update');
+    Route::delete('/admin/dosen/{id}', [App\Http\Controllers\Admin\AdminController::class, 'destroyDosen'])->name('admin.dosen.delete');
 
-    //Kelola Dosen
-    Route::get('/admin/dosen', function () {
-        return view('admin.dosen.index');
-    })->name('admin.dosen.index');
+    // Kelola Staf Akademik
+    Route::get('/admin/akademik-staff', [App\Http\Controllers\Admin\AdminController::class, 'indexAkademikStaff'])->name('admin.akademik_staff.index');
+    Route::post('/admin/akademik-staff/store', [App\Http\Controllers\Admin\AdminController::class, 'storeAkademikStaff'])->name('admin.akademik_staff.store');
+    Route::put('/admin/akademik-staff/{id}', [App\Http\Controllers\Admin\AdminController::class, 'updateAkademikStaff'])->name('admin.akademik_staff.update');
+    Route::delete('/admin/akademik-staff/{id}', [App\Http\Controllers\Admin\AdminController::class, 'destroyAkademikStaff'])->name('admin.akademik_staff.delete');
 
-    //Aktivasi Akun
-    Route::get('/admin/mahasiswa/aktivasiAkun', function () {
-        return view('admin.mahasiswa.aktivasiAkun');
-    })->name('admin.mahasiswa.aktivasiAkun');
+    // Admin Profile
+    Route::get('/admin/profile', [App\Http\Controllers\Admin\ProfileController::class, 'index'])->name('admin.profile');
+    Route::post('/admin/profile', [App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('admin.profile.update');
+    Route::post('/admin/profile/password', [App\Http\Controllers\Admin\ProfileController::class, 'changePassword'])->name('admin.profile.password');
 });
 
 //Akademik ROUTES
 Route::middleware(['auth', 'role:akademik'])->group(function () {
-    Route::get('/akademik/dashboardAkademik', function () {
-        return view('akademik.dashboardAkademik');
-    })->name('akademik.dashboardAkademik');
+    Route::get('/akademik/dashboardAkademik', [App\Http\Controllers\Akademik\AkademikController::class, 'dashboard'])->name('akademik.dashboardAkademik');
+
+    //Kelola Ruangan
+    Route::get('/akademik/ruangan', [App\Http\Controllers\Akademik\AkademikController::class, 'indexRuangan'])->name('akademik.ruangan.index');
+    Route::post('/akademik/ruangan', [App\Http\Controllers\Akademik\AkademikController::class, 'storeRuangan'])->name('akademik.ruangan.store');
+    Route::put('/akademik/ruangan/{id}', [App\Http\Controllers\Akademik\AkademikController::class, 'updateRuangan'])->name('akademik.ruangan.update');
+    Route::delete('/akademik/ruangan/{id}', [App\Http\Controllers\Akademik\AkademikController::class, 'destroyRuangan'])->name('akademik.ruangan.delete');
+
+    //Kelola Prodi
+    Route::get('/akademik/prodi', [App\Http\Controllers\Akademik\AkademikController::class, 'indexProdi'])->name('akademik.prodi.index');
+    Route::post('/akademik/prodi', [App\Http\Controllers\Akademik\AkademikController::class, 'storeProdi'])->name('akademik.prodi.store');
+    Route::put('/akademik/prodi/{id}', [App\Http\Controllers\Akademik\AkademikController::class, 'updateProdi'])->name('akademik.prodi.update');
+    Route::delete('/akademik/prodi/{id}', [App\Http\Controllers\Akademik\AkademikController::class, 'destroyProdi'])->name('akademik.prodi.delete');
 
     //kelola matkul
-    Route::get('/akademik/matakuliah/index', function () {
-        return view('akademik.matakuliah.index');
-    })->name('akademik.matakuliah.index');
+    Route::get('/akademik/matakuliah', [App\Http\Controllers\Akademik\AkademikController::class, 'indexMatakuliah'])->name('akademik.matakuliah.index');
+    Route::post('/akademik/matakuliah', [App\Http\Controllers\Akademik\AkademikController::class, 'storeMatakuliah'])->name('akademik.matakuliah.store');
+    Route::put('/akademik/matakuliah/{id}', [App\Http\Controllers\Akademik\AkademikController::class, 'updateMatakuliah'])->name('akademik.matakuliah.update');
+    Route::delete('/akademik/matakuliah/{id}', [App\Http\Controllers\Akademik\AkademikController::class, 'destroyMatakuliah'])->name('akademik.matakuliah.delete');
 
     //kelola kurikulum
-    Route::get('/akademik/kurikulum/index', function () {
-        return view('akademik.kurikulum.index');
-    })->name('akademik.kurikulum.index');
+    Route::get('/akademik/kurikulum', [App\Http\Controllers\Akademik\AkademikController::class, 'indexKurikulum'])->name('akademik.kurikulum.index');
+    Route::post('/akademik/kurikulum', [App\Http\Controllers\Akademik\AkademikController::class, 'storeKurikulum'])->name('akademik.kurikulum.store');
+    Route::get('/akademik/kurikulum/{id}', [App\Http\Controllers\Akademik\AkademikController::class, 'showKurikulum'])->name('akademik.kurikulum.show');
+    Route::put('/akademik/kurikulum/{id}', [App\Http\Controllers\Akademik\AkademikController::class, 'updateKurikulum'])->name('akademik.kurikulum.update');
+    Route::delete('/akademik/kurikulum/{id}', [App\Http\Controllers\Akademik\AkademikController::class, 'destroyKurikulum'])->name('akademik.kurikulum.delete');
+    Route::post('/akademik/kurikulum/{id}/attach', [App\Http\Controllers\Akademik\AkademikController::class, 'attachMatakuliah'])->name('akademik.kurikulum.attach');
+    Route::delete('/akademik/kurikulum/{id}/detach/{matkul_id}', [App\Http\Controllers\Akademik\AkademikController::class, 'detachMatakuliah'])->name('akademik.kurikulum.detach');
 
     //Kelola Kelas
-    Route::get('/akademik/kelas/index', function () {
-        return view('akademik.kelas.index');
-    })->name('akademik.kelas.index');
+    Route::get('/akademik/kelas', [App\Http\Controllers\Akademik\AkademikController::class, 'indexKelas'])->name('akademik.kelas.index');
+    Route::post('/akademik/kelas', [App\Http\Controllers\Akademik\AkademikController::class, 'storeKelas'])->name('akademik.kelas.store');
+    Route::put('/akademik/kelas/{id}', [App\Http\Controllers\Akademik\AkademikController::class, 'updateKelas'])->name('akademik.kelas.update');
+    Route::delete('/akademik/kelas/{id}', [App\Http\Controllers\Akademik\AkademikController::class, 'destroyKelas'])->name('akademik.kelas.delete');
 
     //Kelola Jadwal
-    Route::get('/akademik/jadwal/index', function () {
-        return view('akademik.jadwal.index');
-    })->name('akademik.jadwal.index');
+    Route::get('/akademik/jadwal', [App\Http\Controllers\Akademik\AkademikController::class, 'indexJadwal'])->name('akademik.jadwal.index');
+    Route::post('/akademik/jadwal', [App\Http\Controllers\Akademik\AkademikController::class, 'storeJadwal'])->name('akademik.jadwal.store');
+    Route::put('/akademik/jadwal/{id}', [App\Http\Controllers\Akademik\AkademikController::class, 'updateJadwal'])->name('akademik.jadwal.update');
+    Route::delete('/akademik/jadwal/{id}', [App\Http\Controllers\Akademik\AkademikController::class, 'destroyJadwal'])->name('akademik.jadwal.delete');
+
+    // List Views (Read Only)
+    Route::get('/akademik/dosen', [App\Http\Controllers\Akademik\AkademikController::class, 'listDosen'])->name('akademik.dosen.list');
+    Route::get('/akademik/mahasiswa', [App\Http\Controllers\Akademik\AkademikController::class, 'listMahasiswa'])->name('akademik.mahasiswa.list');
+
+    // Profile
+    Route::get('/akademik/profile', [App\Http\Controllers\Akademik\ProfileController::class, 'index'])->name('akademik.profile');
+    Route::post('/akademik/profile', [App\Http\Controllers\Akademik\ProfileController::class, 'update'])->name('akademik.profile.update');
+    Route::post('/akademik/profile/password', [App\Http\Controllers\Akademik\ProfileController::class, 'changePassword'])->name('akademik.profile.password');
 });

@@ -35,20 +35,21 @@
 <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
     <div class="flex items-center justify-between gap-4 flex-wrap">
         <div class="flex items-center gap-3 flex-wrap">
-            <select class="border-2 border-gray-300 rounded-xl px-5 py-3.5 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-[#1F653F] focus:border-[#1F653F] bg-white transition-all hover:border-[#2F8054]">
-                <option selected>2025/2026 Ganjil</option>
-                <option>2024/2025 Genap</option>
-                <option>2024/2025 Ganjil</option>
+            <select id="filter-semester" class="filter-trigger border-2 border-gray-300 rounded-xl px-5 py-3.5 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-[#1F653F] focus:border-[#1F653F] bg-white transition-all hover:border-[#2F8054]">
+                <option value="">Semua Semester</option>
+                @foreach($semesters as $s)
+                    <option value="{{ $s->semester_ajaran_id }}" {{ $s->is_active ? 'selected' : '' }}>{{ $s->nama_semester }}</option>
+                @endforeach
             </select>
 
-            <select class="border-2 border-gray-300 rounded-xl px-5 py-3.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#1F653F] focus:border-[#1F653F] bg-white transition-all hover:border-[#2F8054]">
+            <select id="filter-prodi" class="filter-trigger border-2 border-gray-300 rounded-xl px-5 py-3.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#1F653F] focus:border-[#1F653F] bg-white transition-all hover:border-[#2F8054]">
                 <option value="">Semua Prodi</option>
-                <option>Rekayasa Perangkat Lunak</option>
-                <option>Teknik Informatika</option>
-                <option>Sistem Informasi</option>
+                @foreach($prodis as $p)
+                    <option value="{{ $p->prodi_id }}">{{ $p->nama_prodi }}</option>
+                @endforeach
             </select>
 
-            <select class="border-2 border-gray-300 rounded-xl px-5 py-3.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#1F653F] focus:border-[#1F653F] bg-white transition-all hover:border-[#2F8054]">
+            <select id="filter-hari" class="filter-trigger border-2 border-gray-300 rounded-xl px-5 py-3.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#1F653F] focus:border-[#1F653F] bg-white transition-all hover:border-[#2F8054]">
                 <option value="">Semua Hari</option>
                 <option>Senin</option>
                 <option>Selasa</option>
@@ -64,7 +65,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
                 </div>
-                <input type="text" placeholder="Cari jadwal..." class="pl-16 pr-4 py-3.5 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1F653F] focus:border-[#1F653F] transition-all text-sm group-hover:border-[#2F8054]">
+                <input type="text" id="search-input" placeholder="Cari jadwal..." class="pl-16 pr-4 py-3.5 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1F653F] focus:border-[#1F653F] transition-all text-sm group-hover:border-[#2F8054]">
             </div>
         </div>
 
@@ -96,7 +97,7 @@
                 </svg>
             </div>
             <p class="text-sm text-gray-600 font-semibold mb-2">Total Jadwal</p>
-            <p class="text-4xl font-extrabold text-gray-900">342</p>
+            <p id="stat-total" class="text-4xl font-extrabold text-gray-900">{{ $stats['total'] }}</p>
         </div>
     </div>
 
@@ -107,7 +108,7 @@
                 <span class="text-white font-extrabold text-lg">SEN</span>
             </div>
             <p class="text-sm text-gray-600 font-semibold mb-2">Senin</p>
-            <p class="text-4xl font-extrabold text-gray-900">68</p>
+            <p id="stat-senin" class="text-4xl font-extrabold text-gray-900">{{ $stats['senin'] }}</p>
         </div>
     </div>
 
@@ -118,7 +119,7 @@
                 <span class="text-white font-extrabold text-lg">SEL</span>
             </div>
             <p class="text-sm text-gray-600 font-semibold mb-2">Selasa</p>
-            <p class="text-4xl font-extrabold text-gray-900">72</p>
+            <p id="stat-selasa" class="text-4xl font-extrabold text-gray-900">{{ $stats['selasa'] }}</p>
         </div>
     </div>
 
@@ -129,7 +130,7 @@
                 <span class="text-white font-extrabold text-lg">RAB</span>
             </div>
             <p class="text-sm text-gray-600 font-semibold mb-2">Rabu</p>
-            <p class="text-4xl font-extrabold text-gray-900">65</p>
+            <p id="stat-rabu" class="text-4xl font-extrabold text-gray-900">{{ $stats['rabu'] }}</p>
         </div>
     </div>
 
@@ -137,12 +138,10 @@
         <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-red-500/10 to-transparent rounded-bl-full"></div>
         <div class="relative z-10">
             <div class="w-14 h-14 bg-gradient-to-br from-red-500 to-rose-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform">
-                <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                </svg>
+                <span class="text-white font-extrabold text-lg">KAM</span>
             </div>
-            <p class="text-sm text-gray-600 font-semibold mb-2">Konflik</p>
-            <p class="text-4xl font-extrabold text-gray-900">3</p>
+            <p class="text-sm text-gray-600 font-semibold mb-2">Kamis</p>
+            <p id="stat-kamis" class="text-4xl font-extrabold text-gray-900">{{ $stats['kamis'] }}</p>
         </div>
     </div>
 </div>
@@ -164,7 +163,7 @@
                 Tampilan Kalender
             </button>
         </div>
-        <p class="text-sm text-gray-600 font-medium">Menampilkan <strong class="text-gray-900">342</strong> jadwal</p>
+        <p class="text-sm text-gray-600 font-medium">Menampilkan <strong class="text-gray-900">{{ $jadwal->count() }}</strong> jadwal</p>
     </div>
 </div>
 
@@ -184,88 +183,8 @@
                     <th class="px-6 py-5 text-center text-sm font-bold uppercase tracking-wider">Aksi</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-100">
-                @php
-                    $jadwal = [
-                        ['hari' => 'Senin', 'waktu' => '08:00 - 10:00', 'matkul' => 'Pemrograman Web Lanjut', 'kelas' => 'RPL 3A', 'dosen' => 'Dr. Rizki Ramadhansyah', 'ruangan' => 'Lab Komputer 1', 'status' => 'Aktif'],
-                        ['hari' => 'Senin', 'waktu' => '10:00 - 12:00', 'matkul' => 'Basis Data', 'kelas' => 'RPL 2B', 'dosen' => 'Dr. Ahmad Fauzi', 'ruangan' => 'Ruang 4.2', 'status' => 'Aktif'],
-                        ['hari' => 'Selasa', 'waktu' => '08:00 - 10:00', 'matkul' => 'Agile Development', 'kelas' => 'RPL 4A', 'dosen' => 'Dr. Rizki Ramadhansyah', 'ruangan' => 'Ruang 4.1', 'status' => 'Aktif'],
-                        ['hari' => 'Selasa', 'waktu' => '08:00 - 10:00', 'matkul' => 'Matematika Diskrit', 'kelas' => 'TI 1A', 'dosen' => 'Ir. Siti Rahma', 'ruangan' => 'Ruang 4.1', 'status' => 'Konflik'],
-                        ['hari' => 'Rabu', 'waktu' => '13:00 - 15:00', 'matkul' => 'Algoritma dan Struktur Data', 'kelas' => 'RPL 2A', 'dosen' => 'Dr. Budi Santoso', 'ruangan' => 'Lab Komputer 2', 'status' => 'Aktif'],
-                    ];
-                @endphp
-
-                @foreach($jadwal as $jdw)
-                <tr class="hover:bg-gradient-to-r hover:from-emerald-50/50 hover:to-transparent transition-all group">
-                    <td class="px-6 py-5">
-                        <span class="inline-block bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-md">{{ $jdw['hari'] }}</span>
-                    </td>
-                    <td class="px-6 py-5">
-                        <div class="flex items-center gap-2">
-                            <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-                                <svg class="w-4 h-4 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
-                                </svg>
-                            </div>
-                            <span class="text-sm font-bold text-gray-800">{{ $jdw['waktu'] }}</span>
-                        </div>
-                    </td>
-                    <td class="px-6 py-5">
-                        <p class="text-sm font-bold text-gray-900">{{ $jdw['matkul'] }}</p>
-                    </td>
-                    <td class="px-6 py-5">
-                        <span class="inline-block bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-md">{{ $jdw['kelas'] }}</span>
-                    </td>
-                    <td class="px-6 py-5">
-                        <p class="text-sm text-gray-700 font-medium">{{ $jdw['dosen'] }}</p>
-                    </td>
-                    <td class="px-6 py-5">
-                        <div class="flex items-center gap-2">
-                            <div class="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center">
-                                <svg class="w-4 h-4 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
-                                </svg>
-                            </div>
-                            <span class="text-sm text-gray-700 font-medium">{{ $jdw['ruangan'] }}</span>
-                        </div>
-                    </td>
-                    <td class="px-6 py-5 text-center">
-                        @if($jdw['status'] == 'Aktif')
-                            <span class="inline-flex items-center gap-1.5 bg-gradient-to-r from-emerald-500 to-green-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-md">
-                                <span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
-                                Aktif
-                            </span>
-                        @else
-                            <span class="inline-flex items-center gap-1.5 bg-gradient-to-r from-red-500 to-rose-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-md">
-                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                                </svg>
-                                Konflik
-                            </span>
-                        @endif
-                    </td>
-                    <td class="px-6 py-5">
-                        <div class="flex items-center justify-center gap-2">
-                            <button class="p-2.5 bg-blue-50 hover:bg-gradient-to-br hover:from-blue-500 hover:to-blue-600 text-blue-600 hover:text-white rounded-xl transition-all shadow-sm hover:shadow-md" title="Detail">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                </svg>
-                            </button>
-                            <button onclick="openEditModal()" class="p-2.5 bg-emerald-50 hover:bg-gradient-to-br hover:from-[#1F653F] hover:to-[#2F8054] text-emerald-600 hover:text-white rounded-xl transition-all shadow-sm hover:shadow-md" title="Edit">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                </svg>
-                            </button>
-                            <button onclick="deleteJadwal()" class="p-2.5 bg-red-50 hover:bg-gradient-to-br hover:from-red-500 hover:to-red-600 text-red-600 hover:text-white rounded-xl transition-all shadow-sm hover:shadow-md" title="Hapus">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-                @endforeach
+            <tbody id="jadwal-list-body" class="divide-y divide-gray-100">
+                @include('akademik.jadwal._table')
             </tbody>
         </table>
     </div>
@@ -273,7 +192,7 @@
     {{-- Pagination --}}
     <div class="bg-gradient-to-r from-gray-50 to-white px-6 py-5 border-t border-gray-200 flex items-center justify-between">
         <div class="text-sm text-gray-600 font-medium">
-            Menampilkan <span class="font-bold text-gray-900">1-5</span> dari <span class="font-bold text-gray-900">342</span> jadwal
+            Menampilkan <span id="count-current" class="font-bold text-gray-900">{{ $jadwal->count() }}</span> jadwal
         </div>
         <div class="flex items-center gap-2">
             <button class="px-4 py-2 border-2 border-gray-300 rounded-xl text-sm font-semibold hover:bg-gray-100 hover:border-gray-400 transition-all">
@@ -291,32 +210,7 @@
 
 {{-- Calendar View --}}
 <div id="view-calendar" class="hidden bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-    <div class="grid grid-cols-6 gap-6">
-        @php
-            $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-            $timeSlots = ['08:00', '10:00', '13:00', '15:00'];
-        @endphp
-
-        @foreach($days as $day)
-        <div class="border-2 border-gray-200 rounded-2xl p-5 hover:border-[#1F653F]/30 transition-all">
-            <h3 class="font-extrabold text-gray-900 mb-4 pb-3 border-b-2 border-gray-200 text-lg">{{ $day }}</h3>
-            <div class="space-y-3">
-                @for($i = 0; $i < rand(2, 4); $i++)
-                <div class="bg-gradient-to-br from-[#1F653F]/10 to-[#2F8054]/10 border-l-4 border-[#1F653F] p-4 rounded-xl hover:shadow-lg transition-all cursor-pointer group">
-                    <p class="text-xs font-bold text-[#1F653F] mb-2 flex items-center gap-1">
-                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
-                        </svg>
-                        {{ $timeSlots[array_rand($timeSlots)] }}
-                    </p>
-                    <p class="text-sm font-bold text-gray-900 mb-1 group-hover:text-[#1F653F] transition-colors">Mata Kuliah {{ $i + 1 }}</p>
-                    <p class="text-xs text-gray-600 font-medium">RPL 3A • Lab 1</p>
-                </div>
-                @endfor
-            </div>
-        </div>
-        @endforeach
-    </div>
+    @include('akademik.jadwal._calendar')
 </div>
 
 {{-- Modal Add/Edit --}}
@@ -337,48 +231,25 @@
         </div>
 
         <div class="p-8 overflow-y-auto" style="max-height: calc(90vh - 200px);">
-            <form id="jadwalForm">
+            <form id="jadwalForm" method="POST" action="{{ route('akademik.jadwal.store') }}">
+                @csrf
+                <div id="methodField"></div>
                 <div class="space-y-6">
                     <div>
                         <label class="block text-sm font-bold text-gray-800 mb-2 flex items-center gap-2">
                             <span class="w-1.5 h-1.5 bg-[#1F653F] rounded-full"></span>
-                            Mata Kuliah <span class="text-red-500">*</span>
+                            Kelas <span class="text-red-500">*</span>
                         </label>
-                        <select name="matkul" required class="w-full border-2 border-gray-300 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1F653F] bg-white transition-all">
-                            <option value="">Pilih Mata Kuliah</option>
-                            <option>IFI-322507 - Pemrograman Web Lanjut</option>
-                            <option>IFI-322203 - Analisis dan Desain PL</option>
-                            <option>IFI-332308 - Perancangan Antarmuka</option>
+                        <select name="kelas_id" required class="w-full border-2 border-gray-300 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1F653F] bg-white transition-all">
+                            <option value="">Pilih Seksi Mata Kuliah</option>
+                            @foreach($kelas_list as $k)
+                                <option value="{{ $k->kelas_id }}">
+                                    {{ $k->kode_kelas }} (Mhs: {{ $k->krs_details_count }}) - {{ $k->matakuliah->nama_mk }}
+                                </option>
+                            @endforeach
                         </select>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm font-bold text-gray-800 mb-2 flex items-center gap-2">
-                                <span class="w-1.5 h-1.5 bg-[#1F653F] rounded-full"></span>
-                                Kelas <span class="text-red-500">*</span>
-                            </label>
-                            <select name="kelas" required class="w-full border-2 border-gray-300 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1F653F] bg-white transition-all">
-                                <option value="">Pilih Kelas</option>
-                                <option>RPL 3A</option>
-                                <option>RPL 3B</option>
-                                <option>TI 2A</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-bold text-gray-800 mb-2 flex items-center gap-2">
-                                <span class="w-1.5 h-1.5 bg-[#1F653F] rounded-full"></span>
-                                Dosen <span class="text-red-500">*</span>
-                            </label>
-                            <select name="dosen" required class="w-full border-2 border-gray-300 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1F653F] bg-white transition-all">
-                                <option value="">Pilih Dosen</option>
-                                <option>Dr. Rizki Ramadhansyah</option>
-                                <option>Dr. Ahmad Fauzi</option>
-                                <option>Ir. Siti Rahma</option>
-                            </select>
-                        </div>
-                    </div>
 
                     <div class="grid grid-cols-3 gap-6">
                         <div>
@@ -417,14 +288,16 @@
                     <div>
                         <label class="block text-sm font-bold text-gray-800 mb-2 flex items-center gap-2">
                             <span class="w-1.5 h-1.5 bg-[#1F653F] rounded-full"></span>
-                            Ruangan <span class="text-red-500">*</span>
+                            Ruangan Fisik <span class="text-red-500">*</span>
                         </label>
-                        <select name="ruangan" required class="w-full border-2 border-gray-300 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1F653F] bg-white transition-all">
-                            <option value="">Pilih Ruangan</option>
-                            <option>Lab Komputer 1</option>
-                            <option>Lab Komputer 2</option>
-                            <option>Ruang 4.1</option>
-                            <option>Ruang 4.2</option>
+                        <select name="ruangan_id" required class="w-full border-2 border-gray-300 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1F653F] bg-white transition-all">
+                            <option value="">Pilih Ruangan (Gedung - Nama - Kapasitas)</option>
+                            @foreach($ruangans as $r)
+                                <option value="{{ $r->ruangan_id }}" {{ $r->status !== 'Tersedia' ? 'disabled' : '' }}>
+                                    {{ $r->lokasi }} - {{ $r->nama_ruangan }} (Cap: {{ $r->kapasitas }}) 
+                                    {!! $r->status !== 'Tersedia' ? ' - ['.$r->status.']' : '' !!}
+                                </option>
+                            @endforeach
                         </select>
                     </div>
                 </div>
@@ -452,6 +325,26 @@
 
 @push('scripts')
 <script>
+    @if(session('success'))
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: '{{ session('success') }}',
+            showConfirmButton: false,
+            timer: 3000
+        });
+    @endif
+
+    @if($errors->any())
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal!',
+            text: '{{ $errors->first() }}',
+            confirmButtonColor: '#1F653F'
+        });
+    @endif
+</script>
+<script>
 function showView(view) {
     if(view === 'table') {
         document.getElementById('view-table').classList.remove('hidden');
@@ -474,12 +367,26 @@ function openAddModal() {
     document.getElementById('jadwalModal').classList.remove('hidden');
     document.getElementById('jadwalModal').classList.add('flex');
     document.body.style.overflow = 'hidden';
+    const form = document.getElementById('jadwalForm');
+    form.reset();
+    form.action = "{{ route('akademik.jadwal.store') }}";
+    document.getElementById('methodField').innerHTML = '';
 }
 
-function openEditModal() {
+function editJadwal(j) {
     document.getElementById('jadwalModal').classList.remove('hidden');
     document.getElementById('jadwalModal').classList.add('flex');
     document.body.style.overflow = 'hidden';
+    const form = document.getElementById('jadwalForm');
+    form.reset();
+    form.action = `/akademik/jadwal/${j.jadwal_id}`;
+    document.getElementById('methodField').innerHTML = '@method("PUT")';
+    
+    form.kelas_id.value = j.kelas_id;
+    form.hari.value = j.hari;
+    form.jam_mulai.value = j.jam_mulai.substring(0,5);
+    form.jam_selesai.value = j.jam_selesai.substring(0,5);
+    form.ruangan_id.value = j.ruangan_id;
 }
 
 function closeModal() {
@@ -493,19 +400,71 @@ function checkKonflik() {
 }
 
 function saveJadwal() {
-    const form = document.getElementById('jadwalForm');
-    if(!form.checkValidity()) {
-        alert('Mohon lengkapi semua field yang wajib diisi (*)');
-        return;
-    }
-    alert('Jadwal berhasil disimpan!');
-    closeModal();
+    document.getElementById('jadwalForm').submit();
 }
 
 function deleteJadwal() {
     if(confirm('Yakin ingin menghapus jadwal ini?')) {
         alert('Jadwal berhasil dihapus!');
     }
+}
+
+// Real-time Filtering
+let filterTimeout;
+document.querySelectorAll('.filter-trigger, #search-input').forEach(el => {
+    el.addEventListener('input', () => {
+        clearTimeout(filterTimeout);
+        filterTimeout = setTimeout(fetchFilteredJadwal, 300);
+    });
+});
+
+function fetchFilteredJadwal() {
+    const params = new URLSearchParams({
+        semester_id: document.getElementById('filter-semester').value,
+        prodi_id: document.getElementById('filter-prodi').value,
+        hari: document.getElementById('filter-hari').value,
+        search: document.getElementById('search-input').value
+    });
+
+    const listBody = document.getElementById('jadwal-list-body');
+    listBody.style.opacity = '0.5';
+
+    fetch("{{ route('akademik.jadwal.index') }}?" + params.toString(), {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(res => {
+        listBody.innerHTML = res.html;
+        listBody.style.opacity = '1';
+        
+        // Update Calendar
+        const calendarContainer = document.getElementById('view-calendar');
+        if(res.calendar) {
+            calendarContainer.innerHTML = res.calendar;
+        }
+        
+        // Update Stats
+        if(res.stats) {
+            document.getElementById('stat-total').innerText = res.stats.total;
+            document.getElementById('stat-senin').innerText = res.stats.senin;
+            document.getElementById('stat-selasa').innerText = res.stats.selasa;
+            document.getElementById('stat-rabu').innerText = res.stats.rabu;
+            document.getElementById('stat-kamis').innerText = res.stats.kamis;
+        }
+
+        // Update count - count rows that don't have colspan (empty state row has colspan)
+        const rowCount = listBody.querySelectorAll('tr:not([colspan])').length;
+        // Simple count of all rows if no empty state is present
+        const actualCount = listBody.querySelectorAll('tr:not(:first-child:last-child)').length || (listBody.querySelector('td[colspan]') ? 0 : listBody.querySelectorAll('tr').length);
+        
+        document.getElementById('count-current').innerText = actualCount;
+    })
+    .catch(err => {
+        listBody.style.opacity = '1';
+        console.error(err);
+    });
 }
 </script>
 

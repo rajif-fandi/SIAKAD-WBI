@@ -34,35 +34,29 @@
 {{-- Filter & Search --}}
 <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
     <div class="flex items-center gap-4 flex-wrap">
-        <div class="flex-1 min-w-[300px]">
+        <form action="{{ route('akademik.kelas.index') }}" method="GET" class="flex-1 min-w-[300px]">
             <div class="relative group">
                 <div class="absolute left-4 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-gradient-to-br from-[#1F653F]/10 to-transparent rounded-lg flex items-center justify-center">
                     <svg class="w-5 h-5 text-[#1F653F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
                 </div>
-                <input type="text" placeholder="Cari kelas..." class="w-full pl-16 pr-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1F653F] focus:border-[#1F653F] transition-all text-sm group-hover:border-[#2F8054]">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari kode atau nama mata kuliah..." class="w-full pl-16 pr-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1F653F] focus:border-[#1F653F] transition-all text-sm group-hover:border-[#2F8054]">
             </div>
-        </div>
+        </form>
         
-        <select class="border-2 border-gray-200 rounded-xl px-5 py-3.5 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-[#1F653F] focus:border-[#1F653F] bg-white transition-all hover:border-[#2F8054]">
+        <select name="semester_id" onchange="window.location.href='/akademik/kelas?semester_id='+this.value" class="border-2 border-gray-200 rounded-xl px-5 py-3.5 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-[#1F653F] focus:border-[#1F653F] bg-white transition-all hover:border-[#2F8054]">
             <option value="">Semua Semester</option>
-            <option selected>2025/2026 Ganjil</option>
-            <option>2024/2025 Genap</option>
+            @foreach($semesters as $s)
+                <option value="{{ $s->semester_ajaran_id }}" {{ request('semester_id') == $s->semester_ajaran_id ? 'selected' : '' }}>{{ $s->nama_semester }}</option>
+            @endforeach
         </select>
 
-        <select class="border-2 border-gray-200 rounded-xl px-5 py-3.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#1F653F] focus:border-[#1F653F] bg-white transition-all hover:border-[#2F8054]">
+        <select name="prodi_id" onchange="window.location.href='/akademik/kelas?prodi_id='+this.value" class="border-2 border-gray-200 rounded-xl px-5 py-3.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#1F653F] focus:border-[#1F653F] bg-white transition-all hover:border-[#2F8054]">
             <option value="">Semua Prodi</option>
-            <option>RPL</option>
-            <option>TI</option>
-            <option>SI</option>
-        </select>
-
-        <select class="border-2 border-gray-200 rounded-xl px-5 py-3.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#1F653F] focus:border-[#1F653F] bg-white transition-all hover:border-[#2F8054]">
-            <option value="">Semua Status</option>
-            <option>Aktif</option>
-            <option>Selesai</option>
-            <option>Dibatalkan</option>
+            @foreach($prodis as $p)
+                <option value="{{ $p->prodi_id }}" {{ request('prodi_id') == $p->prodi_id ? 'selected' : '' }}>{{ $p->nama_prodi }}</option>
+            @endforeach
         </select>
 
         <button class="px-6 py-3.5 bg-gradient-to-r from-[#1F653F] to-[#2F8054] hover:from-[#2F8054] hover:to-[#47AF76] text-white rounded-xl text-sm font-bold transition-all shadow-lg hover:shadow-xl active:scale-95 flex items-center gap-2">
@@ -85,7 +79,7 @@
                 </svg>
             </div>
             <p class="text-sm text-gray-600 font-semibold mb-2">Total Kelas</p>
-            <p class="text-4xl font-extrabold text-gray-900">342</p>
+            <p class="text-4xl font-extrabold text-gray-900">{{ number_format($stats['total']) }}</p>
         </div>
     </div>
 
@@ -98,11 +92,11 @@
                 </svg>
             </div>
             <p class="text-sm text-gray-600 font-semibold mb-2">Kelas Aktif</p>
-            <p class="text-4xl font-extrabold text-gray-900 mb-1">298</p>
+            <p class="text-4xl font-extrabold text-gray-900 mb-1">{{ number_format($stats['active']) }}</p>
             <div class="flex items-center gap-2">
                 <span class="text-xs px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full font-semibold flex items-center gap-1">
                     <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
-                    87.1% aktif
+                    {{ $stats['total'] > 0 ? round(($stats['active'] / $stats['total']) * 100, 1) : 0 }}% aktif
                 </span>
             </div>
         </div>
@@ -117,7 +111,7 @@
                 </svg>
             </div>
             <p class="text-sm text-gray-600 font-semibold mb-2">Total Mahasiswa</p>
-            <p class="text-4xl font-extrabold text-gray-900">8,456</p>
+            <p class="text-4xl font-extrabold text-gray-900">{{ number_format($stats['total_students']) }}</p>
         </div>
     </div>
 
@@ -130,24 +124,13 @@
                 </svg>
             </div>
             <p class="text-sm text-gray-600 font-semibold mb-2">Rata-rata/Kelas</p>
-            <p class="text-4xl font-extrabold text-gray-900">28</p>
+            <p class="text-4xl font-extrabold text-gray-900">{{ round($stats['avg_per_class'], 1) }}</p>
         </div>
     </div>
 </div>
 
 {{-- Kelas Grid --}}
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    @php
-        $kelas = [
-            ['kode' => 'RPL-3A', 'matkul' => 'Pemrograman Web Lanjut', 'kode_mk' => 'IFI-322507', 'dosen' => 'Dr. Rizki Ramadhansyah', 'mahasiswa' => 32, 'kapasitas' => 40, 'ruangan' => 'Lab 1', 'hari' => 'Senin', 'jam' => '08:00-10:00', 'status' => 'Aktif'],
-            ['kode' => 'RPL-2B', 'matkul' => 'Basis Data', 'kode_mk' => 'IFI-222203', 'dosen' => 'Dr. Ahmad Fauzi', 'mahasiswa' => 28, 'kapasitas' => 35, 'ruangan' => 'R 4.2', 'hari' => 'Selasa', 'jam' => '10:00-12:00', 'status' => 'Aktif'],
-            ['kode' => 'RPL-4A', 'matkul' => 'Agile Development', 'kode_mk' => 'IFI-422401', 'dosen' => 'Ir. Siti Rahma', 'mahasiswa' => 30, 'kapasitas' => 35, 'ruangan' => 'R 4.1', 'hari' => 'Rabu', 'jam' => '13:00-15:00', 'status' => 'Aktif'],
-            ['kode' => 'TI-3A', 'matkul' => 'Jaringan Komputer', 'kode_mk' => 'IFI-332508', 'dosen' => 'Dr. Budi Santoso', 'mahasiswa' => 25, 'kapasitas' => 30, 'ruangan' => 'Lab 2', 'hari' => 'Kamis', 'jam' => '08:00-10:00', 'status' => 'Aktif'],
-            ['kode' => 'SI-2A', 'matkul' => 'Sistem Informasi Manajemen', 'kode_mk' => 'IFI-222304', 'dosen' => 'Dr. Dewi Lestari', 'mahasiswa' => 35, 'kapasitas' => 40, 'ruangan' => 'R 3.1', 'hari' => 'Jumat', 'jam' => '09:00-11:00', 'status' => 'Aktif'],
-            ['kode' => 'RPL-1A', 'matkul' => 'Pemrograman Dasar', 'kode_mk' => 'IFI-112101', 'dosen' => 'Ir. Andi Wijaya', 'mahasiswa' => 40, 'kapasitas' => 40, 'ruangan' => 'Lab 3', 'hari' => 'Senin', 'jam' => '13:00-15:00', 'status' => 'Aktif'],
-        ];
-    @endphp
-
     @foreach($kelas as $k)
     <div class="bg-white rounded-3xl shadow-lg border-2 border-gray-200 hover:border-[#1F653F] hover:shadow-2xl transition-all duration-300 overflow-hidden group">
         {{-- Header --}}
@@ -155,20 +138,20 @@
             <div class="flex items-center justify-between mb-3">
                 <div>
                     <div class="flex items-center gap-2 mb-1">
-                        <h3 class="text-2xl font-extrabold text-gray-900">{{ $k['kode'] }}</h3>
+                        <h3 class="text-2xl font-extrabold text-gray-900">{{ $k->kode_kelas }}</h3>
                     </div>
-                    <p class="text-sm text-gray-600 font-mono font-semibold bg-gray-100 px-3 py-1 rounded-lg inline-block">{{ $k['kode_mk'] }}</p>
+                    <p class="text-sm text-gray-600 font-mono font-semibold bg-gray-100 px-3 py-1 rounded-lg inline-block">{{ $k->matakuliah->kode_mk ?? '-' }}</p>
                 </div>
-                @if($k['status'] == 'Aktif')
+                @if($k->status == 'Aktif')
                     <span class="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-xl text-xs font-bold shadow-lg">
                         <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
                         Aktif
                     </span>
                 @else
-                    <span class="px-4 py-2 bg-gradient-to-r from-gray-400 to-gray-500 text-white rounded-xl text-xs font-bold shadow-md">{{ $k['status'] }}</span>
+                    <span class="px-4 py-2 bg-gradient-to-r from-gray-400 to-gray-500 text-white rounded-xl text-xs font-bold shadow-md">{{ $k->status }}</span>
                 @endif
             </div>
-            <h4 class="font-extrabold text-gray-900 text-lg">{{ $k['matkul'] }}</h4>
+            <h4 class="font-extrabold text-gray-900 text-lg">{{ $k->matakuliah->nama_mk ?? '-' }}</h4>
         </div>
 
         {{-- Content --}}
@@ -182,7 +165,7 @@
                 </div>
                 <div>
                     <p class="text-xs text-gray-500 font-semibold mb-0.5">Dosen Pengampu</p>
-                    <p class="text-sm font-bold text-gray-900">{{ $k['dosen'] }}</p>
+                    <p class="text-sm font-bold text-gray-900">{{ $k->dosen->dosen->nama ?? 'Belum Ditentukan' }}</p>
                 </div>
             </div>
 
@@ -197,62 +180,47 @@
                         </div>
                         <p class="text-xs text-gray-600 font-semibold">Mahasiswa</p>
                     </div>
-                    <p class="text-2xl font-extrabold text-blue-600">{{ $k['mahasiswa'] }}/{{ $k['kapasitas'] }}</p>
+                    @php 
+                        $occupied = $k->krs_details_count ?? 0;
+                        $capacity = $k->kapasitas ?: 1;
+                        $percent = min(100, ($occupied / $capacity) * 100);
+                    @endphp
+                    <p class="text-2xl font-extrabold text-blue-600">{{ $occupied }}/{{ $k->kapasitas }}</p>
                     <div class="w-full bg-blue-200 rounded-full h-2 mt-3">
-                        <div class="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full shadow-sm" style="width: {{ ($k['mahasiswa']/$k['kapasitas'])*100 }}%"></div>
+                        <div class="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full shadow-sm" style="width: {{ $percent }}%"></div>
                     </div>
                 </div>
 
-                <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4 border-2 border-purple-200 hover:shadow-md transition-all">
-                    <div class="flex items-center gap-2 mb-2">
-                        <div class="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
-                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
-                            </svg>
-                        </div>
-                        <p class="text-xs text-gray-600 font-semibold">Ruangan</p>
-                    </div>
-                    <p class="text-2xl font-extrabold text-purple-600">{{ $k['ruangan'] }}</p>
-                </div>
-
-                <div class="bg-gradient-to-br from-emerald-50 to-green-100 rounded-xl p-4 border-2 border-emerald-200 hover:shadow-md transition-all">
-                    <div class="flex items-center gap-2 mb-2">
-                        <div class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center">
-                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
-                            </svg>
-                        </div>
-                        <p class="text-xs text-gray-600 font-semibold">Hari</p>
-                    </div>
-                    <p class="text-lg font-extrabold text-emerald-600">{{ $k['hari'] }}</p>
-                </div>
-
-                <div class="bg-gradient-to-br from-amber-50 to-orange-100 rounded-xl p-4 border-2 border-amber-200 hover:shadow-md transition-all">
+                <div class="bg-gradient-to-br from-amber-50 to-orange-100 rounded-xl p-4 border-2 border-amber-200 hover:shadow-md transition-all md:col-span-2">
                     <div class="flex items-center gap-2 mb-2">
                         <div class="w-8 h-8 bg-amber-500 rounded-lg flex items-center justify-center">
                             <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
                             </svg>
                         </div>
-                        <p class="text-xs text-gray-600 font-semibold">Waktu</p>
+                        <p class="text-xs text-gray-600 font-semibold">Prodi</p>
                     </div>
-                    <p class="text-sm font-extrabold text-amber-600">{{ $k['jam'] }}</p>
+                    <p class="text-sm font-extrabold text-amber-600">{{ $k->prodi->nama_prodi ?? '-' }}</p>
                 </div>
             </div>
 
             {{-- Actions --}}
             <div class="flex items-center gap-2">
-                <button onclick="viewKelas('{{ $k['kode'] }}')" class="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-4 py-3 rounded-xl text-sm font-bold transition-all shadow-lg hover:shadow-xl active:scale-95">
+                <button onclick="viewKelas('{{ $k->kelas_id }}')" class="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-4 py-3 rounded-xl text-sm font-bold transition-all shadow-lg hover:shadow-xl active:scale-95">
                     Detail
                 </button>
-                <button onclick="editKelas('{{ $k['kode'] }}')" class="flex-1 bg-gradient-to-r from-[#1F653F] to-[#2F8054] hover:from-[#2F8054] hover:to-[#47AF76] text-white px-4 py-3 rounded-xl text-sm font-bold transition-all shadow-lg hover:shadow-xl active:scale-95">
+                <button onclick='editKelas(@json($k))' class="flex-1 bg-gradient-to-r from-[#1F653F] to-[#2F8054] hover:from-[#2F8054] hover:to-[#47AF76] text-white px-4 py-3 rounded-xl text-sm font-bold transition-all shadow-lg hover:shadow-xl active:scale-95">
                     Edit
                 </button>
-                <button onclick="deleteKelas('{{ $k['kode'] }}')" class="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-4 py-3 rounded-xl transition-all shadow-lg hover:shadow-xl active:scale-95">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                    </svg>
-                </button>
+                <form action="{{ route('akademik.kelas.delete', $k->kelas_id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus kelas ini?')" class="inline">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-4 py-3 rounded-xl transition-all shadow-lg hover:shadow-xl active:scale-95">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                    </button>
+                </form>
             </div>
         </div>
     </div>
@@ -280,7 +248,9 @@
 
         {{-- Modal Body --}}
         <div class="p-6">
-            <form id="kelasForm">
+            <form id="kelasForm" method="POST" action="{{ route('akademik.kelas.store') }}">
+                @csrf
+                <div id="methodField"></div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Kode Kelas <span class="text-red-500">*</span></label>
@@ -289,30 +259,31 @@
 
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Semester <span class="text-red-500">*</span></label>
-                        <select name="semester" required class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white">
+                        <select name="semester_ajaran_id" required class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white">
                             <option value="">Pilih Semester</option>
-                            <option selected>2025/2026 Ganjil</option>
-                            <option>2024/2025 Genap</option>
+                            @foreach($semesters as $s)
+                                <option value="{{ $s->semester_ajaran_id }}">{{ $s->nama_semester }}</option>
+                            @endforeach
                         </select>
                     </div>
 
                     <div class="md:col-span-2">
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Mata Kuliah <span class="text-red-500">*</span></label>
-                        <select name="matkul" required class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white">
+                        <select name="matakuliah_id" required class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white">
                             <option value="">Pilih Mata Kuliah</option>
-                            <option>IFI-322507 - Pemrograman Web Lanjut</option>
-                            <option>IFI-222203 - Basis Data</option>
-                            <option>IFI-422401 - Agile Development</option>
+                            @foreach($matakuliah as $m)
+                                <option value="{{ $m->matakuliah_id }}">{{ $m->kode_mk }} - {{ $m->nama_mk }}</option>
+                            @endforeach
                         </select>
                     </div>
 
                     <div class="md:col-span-2">
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Dosen Pengampu <span class="text-red-500">*</span></label>
-                        <select name="dosen" required class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white">
+                        <select name="dosen_id" required class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white">
                             <option value="">Pilih Dosen</option>
-                            <option>Dr. Rizki Ramadhansyah, S.T., M.Kom</option>
-                            <option>Dr. Ahmad Fauzi, M.Kom</option>
-                            <option>Ir. Siti Rahma, M.T.</option>
+                            @foreach($dosens as $d)
+                                <option value="{{ $d->dosen_id }}">{{ $d->nama }}</option>
+                            @endforeach
                         </select>
                     </div>
 
@@ -322,37 +293,11 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Ruangan <span class="text-red-500">*</span></label>
-                        <select name="ruangan" required class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white">
-                            <option value="">Pilih Ruangan</option>
-                            <option>Lab Komputer 1</option>
-                            <option>Lab Komputer 2</option>
-                            <option>Ruang 4.1</option>
-                            <option>Ruang 4.2</option>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Status</label>
+                        <select name="status" class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
+                            <option value="Aktif">Aktif</option>
+                            <option value="Tidak Aktif">Tidak Aktif</option>
                         </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Hari <span class="text-red-500">*</span></label>
-                        <select name="hari" required class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white">
-                            <option value="">Pilih Hari</option>
-                            <option>Senin</option>
-                            <option>Selasa</option>
-                            <option>Rabu</option>
-                            <option>Kamis</option>
-                            <option>Jumat</option>
-                            <option>Sabtu</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Jam Mulai <span class="text-red-500">*</span></label>
-                        <input type="time" name="jam_mulai" required class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500">
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Jam Selesai <span class="text-red-500">*</span></label>
-                        <input type="time" name="jam_selesai" required class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500">
                     </div>
 
                     <div>
@@ -360,6 +305,16 @@
                         <select name="status" class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white">
                             <option selected>Aktif</option>
                             <option>Tidak Aktif</option>
+                        </select>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Program Studi <span class="text-red-500">*</span></label>
+                        <select name="prodi_id" required class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white">
+                            <option value="">Pilih Program Studi</option>
+                            @foreach($prodis as $p)
+                                <option value="{{ $p->prodi_id }}">{{ $p->nama_prodi }}</option>
+                            @endforeach
                         </select>
                     </div>
 
@@ -387,20 +342,58 @@
 
 @push('scripts')
 <script>
+    @if(session('success'))
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: '{{ session('success') }}',
+            showConfirmButton: false,
+            timer: 3000,
+            background: '#ffffff',
+            borderRadius: '20px'
+        });
+    @endif
+
+    @if($errors->any())
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal!',
+            text: '{{ $errors->first() }}',
+            confirmButtonColor: '#1F653F',
+            background: '#ffffff',
+            borderRadius: '20px'
+        });
+    @endif
+</script>
+<script>
 function openAddModal() {
     document.getElementById('modalTitle').textContent = 'Buat Kelas Baru';
-    document.getElementById('kelasForm').reset();
+    const form = document.getElementById('kelasForm');
+    form.reset();
+    form.action = "{{ route('akademik.kelas.store') }}";
+    document.getElementById('methodField').innerHTML = '';
     document.getElementById('kelasModal').classList.remove('hidden');
     document.getElementById('kelasModal').classList.add('flex');
     document.body.style.overflow = 'hidden';
 }
 
-function viewKelas(kode) {
-    alert('Menampilkan detail kelas: ' + kode);
-}
-
-function editKelas(kode) {
+function editKelas(k) {
     document.getElementById('modalTitle').textContent = 'Edit Kelas';
+    const form = document.getElementById('kelasForm');
+    form.reset();
+    form.action = `/akademik/kelas/${k.kelas_id}`;
+    document.getElementById('methodField').innerHTML = '@method("PUT")';
+    
+    // Fill form - match select names
+    form.kode.value = k.kode_kelas;
+    form.matakuliah_id.value = k.matakuliah_id;
+    form.dosen_id.value = k.dosen ? (k.dosen.dosen ? k.dosen.dosen.dosen_id : '') : '';
+    form.semester_ajaran_id.value = k.semester_ajaran_id;
+    form.prodi_id.value = k.prodi_id;
+    form.kapasitas.value = k.kapasitas;
+    form.status.value = k.status;
+    form.status.value = k.status;
+
     document.getElementById('kelasModal').classList.remove('hidden');
     document.getElementById('kelasModal').classList.add('flex');
     document.body.style.overflow = 'hidden';
@@ -413,14 +406,7 @@ function closeModal() {
 }
 
 function saveKelas() {
-    const form = document.getElementById('kelasForm');
-    if(!form.checkValidity()) {
-        alert('Mohon lengkapi semua field yang wajib diisi (*)');
-        return;
-    }
-    
-    alert('Kelas berhasil disimpan!');
-    closeModal();
+    document.getElementById('kelasForm').submit();
 }
 
 function deleteKelas(kode) {

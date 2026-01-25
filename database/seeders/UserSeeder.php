@@ -12,21 +12,30 @@ class UserSeeder extends Seeder
     {
         // Mahasiswa
         User::updateOrCreate(
-            ['email' => 'mahasiswa@gmail.com'],
+            ['email' => '2023010001@wbi.ac.id'],
             [
                 'name' => 'Syafrizal',
-                'password' => Hash::make('123456'),
+                'password' => Hash::make('12345678'),
                 'role' => 'mahasiswa',
             ]
         );
 
         // Dosen
         User::updateOrCreate(
-            ['email' => 'dosen@gmail.com'],
+            ['email' => '1987654321@wbi.ac.id'],
             [
                 'name' => 'Rahmat',
-                'password' => Hash::make('123456'),
+                'password' => Hash::make('12345678'),
                 'role' => 'dosen',
+            ]
+        );
+        // Admin
+        User::updateOrCreate(
+            ['email' => 'admin@gmail.com'],
+            [
+                'name' => 'Administrator',
+                'password' => Hash::make('admin123'),
+                'role' => 'admin',
             ]
         );
     }

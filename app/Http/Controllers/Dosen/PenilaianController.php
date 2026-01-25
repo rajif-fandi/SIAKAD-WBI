@@ -136,9 +136,52 @@ class PenilaianController extends Controller
                     'status_kunci' => $request->has('lock_grades')
                 ]
             );
+
+            // SYNC TO KHS (So Student can see it)
+            // 1. Find or Create KHS for Student + Active Semester
+            $activeSemester = SemesterAjaran::where('is_active', true)->first();
+            if ($activeSemester) {
+                $khs = \App\Models\Khs::firstOrCreate(
+                    [
+                        'mahasiswa_id' => $mhsId,
+                        'semester_ajaran_id' => $activeSemester->semester_ajaran_id
+                    ],
+                    [
+                        'semester_semester' => 1, // Logic to determine semester number needs improvement but fallback to 1
+                        'ip' => 0,
+                        'ipk' => 0,
+                        'status' => 'Aktif'
+                    ]
+                );
+
+                // 2. Update/Create KHS Detail
+                \App\Models\KhsDetail::updateOrCreate(
+                    [
+                        'khs_id' => $khs->khs_id,
+                        'matakuliah_id' => $class->matakuliah_id
+                    ],
+                    [
+                        'sks' => $class->matakuliah->sks,
+                        'nilai_angka' => $numeric,
+                        'nilai_huruf' => $letter,
+                        'bobot' => $weight
+                    ]
+                );
+                
+                // 3. Recalculate IP/IPK (Simple version)
+                $details = $khs->details;
+                $totalSks = $details->sum('sks');
+                $totalBobot = 0;
+                foreach($details as $d) {
+                    $totalBobot += ($d->sks * $d->bobot);
+                }
+                $ip = $totalSks > 0 ? $totalBobot / $totalSks : 0;
+                $khs->update(['ip' => $ip]); 
+                // Note: IPK calculation requires previous semesters, skipping for now to avoid complexity in this transaction
+            }
         }
 
-        return redirect()->back()->with('success', 'Nilai mahasiswa berhasil disimpan.');
+        return redirect()->back()->with('success', 'Nilai mahasiswa berhasil disimpan dan disinkronkan ke KHS.');
     }
 
     private function calculateGradeLetter($score)

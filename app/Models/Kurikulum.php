@@ -11,7 +11,7 @@ class Kurikulum extends Model
 
     protected $table = 'kurikulum';
     protected $primaryKey = 'kurikulum_id';
-    protected $fillable = ['prodi_id', 'nama_kurikulum', 'tahun_berlaku', 'created_by'];
+    protected $fillable = ['prodi_id', 'nama_kurikulum', 'tahun_berlaku', 'status', 'created_by'];
 
     public function prodi()
     {

@@ -2,19 +2,26 @@
 
 @section('content')
 
-{{-- Success Message Mock --}}
-<!-- 
 @if(session('success'))
     <div class="mb-4 flex items-center gap-3 bg-green-50 border-l-4 border-green-500 p-4 rounded-r-xl shadow-sm animate-fade-in">
         <svg class="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
         </svg>
-        <span class="text-sm font-bold text-green-800">Data berhasil diperbarui</span>
+        <span class="text-sm font-bold text-green-800">{{ session('success') }}</span>
     </div>
 @endif
--->
 
-<form id="profile-form" action="#" method="POST" enctype="multipart/form-data">
+@if($errors->any())
+    <div class="mb-4 bg-red-50 border-l-4 border-red-500 p-4 rounded-r-xl shadow-sm">
+        <ul class="list-disc list-inside text-xs text-red-700 font-medium">
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+<form id="profile-form" action="{{ route('dosen.profilDosen.update') }}" method="POST" enctype="multipart/form-data">
     @csrf
 
 <div class="mb-8 rounded-[2rem] bg-gradient-to-r from-[#1F653F] via-[#2F8054] to-[#47AF76] p-8 text-white relative overflow-hidden shadow-lg">
@@ -31,14 +38,18 @@
         {{-- Profile Image --}}
         <div class="flex-shrink-0 group relative">
             <div class="h-48 w-48 rounded-[1.5rem] border border-white/40 bg-white/5 flex flex-col items-center justify-center backdrop-blur-sm relative shadow-2xl overflow-hidden">
-                <div id="profile-placeholder" class="flex flex-col items-center justify-center">
-                    <div class="rounded-full border border-white/50 p-4 mb-2">
-                        <svg class="h-12 w-12 text-white/90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
+                @if($dosen->foto)
+                    <img id="profile-preview" src="{{ asset('storage/' . $dosen->foto) }}" class="h-full w-full object-cover">
+                @else
+                    <div id="profile-placeholder" class="flex flex-col items-center justify-center">
+                        <div class="rounded-full border border-white/50 p-4 mb-2">
+                            <svg class="h-12 w-12 text-white/90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                        </div>
+                        <span class="text-xs font-bold text-white/90 tracking-widest uppercase">{{ $dosen->nip }}</span>
                     </div>
-                    <span class="text-xs font-bold text-white/90 tracking-widest uppercase">0123456789</span>
-                </div>
+                @endif
                 
                 {{-- Only visible in edit mode --}}
                 <div id="photo-overlay" class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center cursor-pointer hidden">
@@ -54,8 +65,8 @@
 
         {{-- Profile Info --}}
         <div class="flex-1 text-center md:text-left">
-            <h1 class="text-[2rem] font-bold uppercase tracking-tight leading-none mb-2">Dr. Rahmat, S.Kom., M.Kom.</h1>
-            <p class="text-xl font-medium text-white/80 mb-6">Lektor Kepala - Dosen Tetap</p>
+            <h1 class="text-[2rem] font-bold uppercase tracking-tight leading-none mb-2">{{ ($dosen->gelar_depan ? $dosen->gelar_depan.' ' : '').$dosen->nama.($dosen->gelar_belakang ? ', '.$dosen->gelar_belakang : '') }}</h1>
+            <p class="text-xl font-medium text-white/80 mb-6">{{ $dosen->jabatan ?? '-' }} - {{ $dosen->status_kepegawaian ?? '-' }}</p>
             
             <div class="flex flex-wrap items-center justify-center md:justify-start gap-x-8 gap-y-3 text-sm font-semibold text-white/90 mb-8">
                 <div class="flex items-center gap-2.5 bg-white/10 px-4 py-2 rounded-full backdrop-blur-md">
@@ -76,7 +87,7 @@
                     <svg class="h-5 w-5 text-green-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <span class="text-green-100">Aktif Mengajar</span>
+                    <span class="text-green-100">{{ $dosen->status_dosen ?? 'Aktif' }}</span>
                 </div>
             </div>
 
@@ -131,53 +142,53 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
                 <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">NIDN</label>
-                <div class="text-base font-bold text-gray-400 border-b border-gray-100 pb-2 bg-gray-50/50 cursor-not-allowed">0123456789</div>
+                <div class="text-base font-bold text-gray-400 border-b border-gray-100 pb-2 bg-gray-50/50 cursor-not-allowed">{{ $dosen->nip }}</div>
             </div>
 
             <div>
                 <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Nama Lengkap</label>
-                <input type="text" name="nama" value="Rahmat" class="editable-input w-full text-base font-bold text-gray-800 border-b border-gray-100 pb-2 focus:outline-none focus:border-[#2F8054] transition-colors bg-transparent" readonly>
+                <input type="text" name="nama" value="{{ old('nama', $dosen->nama) }}" class="editable-input w-full text-base font-bold text-gray-800 border-b border-gray-100 pb-2 focus:outline-none focus:border-[#2F8054] transition-colors bg-transparent" readonly>
             </div>
 
             <div>
                 <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Gelar Depan</label>
-                <input type="text" name="gelar_depan" value="Dr." class="editable-input w-full text-base font-bold text-gray-800 border-b border-gray-100 pb-2 focus:outline-none focus:border-[#2F8054] transition-colors bg-transparent" readonly>
+                <input type="text" name="gelar_depan" value="{{ old('gelar_depan', $dosen->gelar_depan) }}" class="editable-input w-full text-base font-bold text-gray-800 border-b border-gray-100 pb-2 focus:outline-none focus:border-[#2F8054] transition-colors bg-transparent" readonly>
             </div>
 
             <div>
                 <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Gelar Belakang</label>
-                <input type="text" name="gelar_belakang" value="S.Kom., M.Kom." class="editable-input w-full text-base font-bold text-gray-800 border-b border-gray-100 pb-2 focus:outline-none focus:border-[#2F8054] transition-colors bg-transparent" readonly>
+                <input type="text" name="gelar_belakang" value="{{ old('gelar_belakang', $dosen->gelar_belakang) }}" class="editable-input w-full text-base font-bold text-gray-800 border-b border-gray-100 pb-2 focus:outline-none focus:border-[#2F8054] transition-colors bg-transparent" readonly>
             </div>
 
             <div>
                 <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Tempat Lahir</label>
-                <input type="text" name="tempat_lahir" value="Medan" class="editable-input w-full text-base font-bold text-gray-800 border-b border-gray-100 pb-2 focus:outline-none focus:border-[#2F8054] transition-colors bg-transparent" readonly>
+                <input type="text" name="tempat_lahir" value="{{ old('tempat_lahir', $dosen->tempat_lahir) }}" class="editable-input w-full text-base font-bold text-gray-800 border-b border-gray-100 pb-2 focus:outline-none focus:border-[#2F8054] transition-colors bg-transparent" readonly>
             </div>
 
             <div>
                 <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Tanggal Lahir</label>
-                <input type="date" name="tanggal_lahir" value="1980-05-15" class="editable-input w-full text-base font-bold text-gray-800 border-b border-gray-100 pb-2 focus:outline-none focus:border-[#2F8054] transition-colors bg-transparent" readonly>
+                <input type="date" name="tanggal_lahir" value="{{ old('tanggal_lahir', $dosen->tanggal_lahir) }}" class="editable-input w-full text-base font-bold text-gray-800 border-b border-gray-100 pb-2 focus:outline-none focus:border-[#2F8054] transition-colors bg-transparent" readonly>
             </div>
 
             <div>
                 <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Jenis Kelamin</label>
                 <select name="jenis_kelamin" class="editable-input w-full text-base font-bold text-gray-800 border-b border-gray-100 pb-2 focus:outline-none focus:border-[#2F8054] transition-colors bg-transparent h-10" disabled>
-                    <option value="L" selected>Laki-laki</option>
-                    <option value="P">Perempuan</option>
+                    <option value="L" {{ $dosen->jenis_kelamin == 'L' ? 'selected' : '' }}>Laki-laki</option>
+                    <option value="P" {{ $dosen->jenis_kelamin == 'P' ? 'selected' : '' }}>Perempuan</option>
                 </select>
             </div>
 
             <div>
                 <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Agama</label>
-                <input type="text" name="agama" value="Islam" class="editable-input w-full text-base font-bold text-gray-800 border-b border-gray-100 pb-2 focus:outline-none focus:border-[#2F8054] transition-colors bg-transparent" readonly>
+                <input type="text" name="agama" value="{{ old('agama', $dosen->agama) }}" class="editable-input w-full text-base font-bold text-gray-800 border-b border-gray-100 pb-2 focus:outline-none focus:border-[#2F8054] transition-colors bg-transparent" readonly>
             </div>
 
             <div>
                 <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Status Perkawinan</label>
                 <select name="status_perkawinan" class="editable-input w-full text-base font-bold text-gray-800 border-b border-gray-100 pb-2 focus:outline-none focus:border-[#2F8054] transition-colors bg-transparent h-10" disabled>
-                    <option value="Menikah" selected>Menikah</option>
-                    <option value="Belum Menikah">Belum Menikah</option>
-                    <option value="Janda/Duda">Janda/Duda</option>
+                    <option value="Menikah" {{ $dosen->status_perkawinan == 'Menikah' ? 'selected' : '' }}>Menikah</option>
+                    <option value="Belum Menikah" {{ $dosen->status_perkawinan == 'Belum Menikah' ? 'selected' : '' }}>Belum Menikah</option>
+                    <option value="Janda/Duda" {{ $dosen->status_perkawinan == 'Janda/Duda' ? 'selected' : '' }}>Janda/Duda</option>
                 </select>
             </div>
         </div>
@@ -195,26 +206,22 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div class="md:col-span-2">
                 <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Alamat Lengkap</label>
-                <textarea name="alamat_detail" rows="2" class="editable-input w-full text-base font-bold text-gray-800 border-b border-gray-100 pb-2 focus:outline-none focus:border-[#2F8054] transition-colors bg-transparent resize-none" readonly>Jl. Gatot Subroto No. 123</textarea>
+                <textarea name="alamat_detail" rows="2" class="editable-input w-full text-base font-bold text-gray-800 border-b border-gray-100 pb-2 focus:outline-none focus:border-[#2F8054] transition-colors bg-transparent resize-none" readonly>{{ old('alamat_detail', $dosen->alamat_detail) }}</textarea>
             </div>
 
             <div>
-                <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">RT / RW</label>
-                <div class="flex gap-4">
-                    <input type="text" name="rt" value="001" class="editable-input w-1/2 text-base font-bold text-gray-800 border-b border-gray-100 pb-2 focus:outline-none focus:border-[#2F8054] transition-colors bg-transparent" readonly>
-                    <span class="text-gray-400 self-end mb-2">/</span>
-                    <input type="text" name="rw" value="002" class="editable-input w-1/2 text-base font-bold text-gray-800 border-b border-gray-100 pb-2 focus:outline-none focus:border-[#2F8054] transition-colors bg-transparent" readonly>
-                </div>
+                <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Program Studi</label>
+                <div class="text-base font-bold text-gray-800 border-b border-gray-100 pb-2">{{ $dosen->prodi->nama_prodi ?? '-' }}</div>
             </div>
 
             <div>
-                <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Email</label>
-                <input type="email" name="email" value="Rahmat@univ.ac.id" class="editable-input w-full text-base font-bold text-gray-800 border-b border-gray-100 pb-2 focus:outline-none focus:border-[#2F8054] transition-colors bg-transparent" readonly>
+                <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Email Akumulasi</label>
+                <div class="text-base font-bold text-gray-400 border-b border-gray-100 pb-2 bg-gray-50/50 cursor-not-allowed">{{ $user->email }}</div>
             </div>
 
             <div>
                 <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Telepon / HP</label>
-                <input type="text" name="no_hp" value="081234567890" class="editable-input w-full text-base font-bold text-gray-800 border-b border-gray-100 pb-2 focus:outline-none focus:border-[#2F8054] transition-colors bg-transparent" readonly>
+                <input type="text" name="no_hp" value="{{ old('no_hp', $dosen->no_hp) }}" class="editable-input w-full text-base font-bold text-gray-800 border-b border-gray-100 pb-2 focus:outline-none focus:border-[#2F8054] transition-colors bg-transparent" readonly>
             </div>
 
             <div>
@@ -264,13 +271,13 @@
                         <input type="text" name="tahun_lulus" value="2015" class="editable-input w-full text-base font-bold text-gray-800 border-b border-gray-100 pb-2 focus:outline-none focus:border-[#2F8054] transition-colors bg-transparent" readonly>
                     </div>
 
-                    <div class="md:col-span-2">
-                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Universitas Asal</label>
-                        <input type="text" name="universitas_asal" value="Universitas Indonesia" class="editable-input w-full text-base font-bold text-gray-800 border-b border-gray-100 pb-2 focus:outline-none focus:border-[#2F8054] transition-colors bg-transparent" readonly>
+                     <div class="md:col-span-2">
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">S1 (Gelar - Prodi - Kampus)</label>
+                        <div class="text-base font-bold text-gray-800 border-b border-gray-100 pb-2">{{ $dosen->s1_gelar }} - {{ $dosen->s1_prodi }} ({{ $dosen->s1_univ }} - {{ $dosen->s1_tahun }})</div>
                     </div>
                      <div class="md:col-span-2">
-                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Jurusan</label>
-                        <input type="text" name="jurusan" value="Ilmu Komputer" class="editable-input w-full text-base font-bold text-gray-800 border-b border-gray-100 pb-2 focus:outline-none focus:border-[#2F8054] transition-colors bg-transparent" readonly>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">S2 (Gelar - Prodi - Kampus)</label>
+                        <div class="text-base font-bold text-gray-800 border-b border-gray-100 pb-2">{{ $dosen->s2_gelar }} - {{ $dosen->s2_prodi }} ({{ $dosen->s2_univ }} - {{ $dosen->s2_tahun }})</div>
                     </div>
                 </div>
             </div>
@@ -278,9 +285,9 @@
             <div>
                 <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Bidang Keahlian</label>
                 <div class="flex flex-wrap gap-2">
-                    <span class="bg-[#1F653F]/10 text-[#1F653F] px-4 py-2 rounded-lg text-sm font-bold border border-[#1F653F]/20">Artificial Intelligence</span>
-                    <span class="bg-[#1F653F]/10 text-[#1F653F] px-4 py-2 rounded-lg text-sm font-bold border border-[#1F653F]/20">Machine Learning</span>
-                    <span class="bg-[#1F653F]/10 text-[#1F653F] px-4 py-2 rounded-lg text-sm font-bold border border-[#1F653F]/20">Data Science</span>
+                    @foreach(explode(',', $dosen->bidang_keahlian) as $expert)
+                        <span class="bg-[#1F653F]/10 text-[#1F653F] px-4 py-2 rounded-lg text-sm font-bold border border-[#1F653F]/20">{{ trim($expert) }}</span>
+                    @endforeach
                 </div>
             </div>
         </div>
@@ -298,32 +305,27 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
                 <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Status Dosen</label>
-                <div class="text-base font-bold text-[#2E7D55] bg-green-50 px-3 py-1.5 rounded-lg inline-block border border-green-100">Dosen Tetap</div>
+                <div class="text-base font-bold text-[#2E7D55] bg-green-50 px-3 py-1.5 rounded-lg inline-block border border-green-100">{{ $dosen->status_dosen }}</div>
             </div>
 
             <div>
                 <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Status Keaktifan</label>
-                 <div class="text-base font-bold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg inline-block border border-blue-100">Aktif</div>
+                 <div class="text-base font-bold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg inline-block border border-blue-100">{{ $dosen->status_kepegawaian }}</div>
             </div>
 
             <div>
                 <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Jabatan Fungsional</label>
-                <input type="text" name="jabatan_fungsional" value="Lektor Kepala" class="editable-input w-full text-base font-bold text-gray-800 border-b border-gray-100 pb-2 focus:outline-none focus:border-[#2F8054] transition-colors bg-transparent" readonly>
+                <div class="text-base font-bold text-gray-800 border-b border-gray-100 pb-2">{{ $dosen->jabatan }}</div>
             </div>
 
             <div>
                 <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Tanggal Mulai Kerja</label>
-                <input type="date" name="tgl_mulai_kerja" value="2005-09-01" class="editable-input w-full text-base font-bold text-gray-800 border-b border-gray-100 pb-2 focus:outline-none focus:border-[#2F8054] transition-colors bg-transparent" readonly>
+                <div class="text-base font-bold text-gray-800 border-b border-gray-100 pb-2">{{ $dosen->tanggal_mulai }}</div>
             </div>
 
             <div>
                 <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">No. Sertifikat Pendidik</label>
-                <input type="text" name="no_sertifikat" value="123456789012" class="editable-input w-full text-base font-bold text-gray-800 border-b border-gray-100 pb-2 focus:outline-none focus:border-[#2F8054] transition-colors bg-transparent" readonly>
-            </div>
-
-            <div>
-                <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Tanggal Sertifikat</label>
-                <input type="date" name="tgl_sertifikat" value="2010-12-15" class="editable-input w-full text-base font-bold text-gray-800 border-b border-gray-100 pb-2 focus:outline-none focus:border-[#2F8054] transition-colors bg-transparent" readonly>
+                <div class="text-base font-bold text-gray-800 border-b border-gray-100 pb-2">{{ $dosen->no_sertifikat ?? '-' }}</div>
             </div>
         </div>
     </div>
@@ -363,7 +365,7 @@
                 </button>
             </div>
             
-            <form action="#" method="POST" class="p-8">
+            <form action="{{ route('dosen.profilDosen.password') }}" method="POST" class="p-8">
                 @csrf
                 <div class="space-y-6">
                     <div>

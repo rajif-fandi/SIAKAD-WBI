@@ -45,6 +45,17 @@
             <div class="login-box shadow">
                 <h2 class="wbi-title text-center mb-2">Sign In</h2>
                 <p class="text-center mb-4">Masuk Ke Portal Mahasiswa</p>
+
+                @if($errors->any())
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <form method="POST" action="/login">
                     @csrf
 
